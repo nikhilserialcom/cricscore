@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Score Card </title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+        integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div class="score-card">   
+        <div class="score_modal">
+            <div class="score-content">
+                <span class="close" id="closeModalBtn">&times;</span>
+                <p>Runs Scored by running</p>
+                <input type="text" id="score_model_input" class="form-control">
+                <p class="note">4 and 6 won't be considered as boundaries.</p>
+                <button class="btn btn-primary mt-2" id="submit_btn">ok</button>
+            </div>
+        </div>
+        <div class="NoBowl_modal">
+            <div class="score-content">
+                <span class="close" id="closeNoBowlModalBtn">&times;</span>
+                <p>No Bowl modal</p>
+                <input type="text" id="score_nobowl_model_input" class="form-control">
+                <p class="note">4 and 6 won't be considered as boundaries.</p>
+                <button class="btn btn-primary mt-2" id="nb_btn">ok</button>
+            </div>
+        </div>
+        <div class="lagby_modal">
+            <div class="score-content">
+                <span class="close" id="closelagbyModalBtn">&times;</span>
+                <p>Lag By modal</p>
+                <input type="text" id="score_lagby_model_input" class="form-control">
+                <p class="note">4 and 6 won't be considered as boundaries.</p>
+                <button class="btn btn-primary mt-2" id="lagby_btn">ok</button>
+            </div>
+        </div>
+        <div class="bye_modal">
+            <div class="score-content">
+                <span class="close" id="closebyeModalBtn">&times;</span>
+                <p>Bye modal</p>
+                <input type="text" id="score_bye_model_input" class="form-control">
+                <button class="btn btn-primary mt-2" id="bye_btn">ok</button>
+            </div>
+        </div>
+        <div class="undo_modal">
+            <div class="score-content">
+                <span class="close" id="closeUndoModalBtn">&times;</span>
+                <p>undo</p>
+                <!-- <input type="text" id="score_model_input" class="form-control">
+                <p class="note">4 and 6 won't be considered as boundaries.</p>
+                <button class="btn btn-primary mt-2" id="submit_btn">ok</button> -->
+            </div>
+        </div>
+        <div class="out_modal">
+            <div class="score-content">
+                <span class="close" id="classOutModalBtn">&times;</span>
+                <p>Out Player</p>
+                <select class="form-select select_batsman" aria-label="Default select example">
+                    <option selected disabled>select player</option>
+                    <option value="Bowled">Bowled</option>
+                    <option value="Caught">Caught</option>
+                    <option value="Run_Out">Run Out</option> 
+                </select>
+                <button class="btn btn-danger mt-2" id="submit_out">ok</button>
+            </div>
+        </div>
+        <div class="select_batsman_modal">
+            <div class="batsman_content">
+                <p>select new batsman</p>
+                <div class="batsman_list">
+                    <!-- <div class="batsman_detail">
+                        <div class="batsman_profile">
+                            <img src="img/batsman.svg" alt="">
+                        </div>
+                        <div class="batsman_name" id="52">nikhil Patel</div>
+                    </div>
+                    <div class="batsman_detail">
+                        <div class="batsman_profile">
+                            <img src="img/batsman.svg" alt="">
+                        </div>
+                        <div class="batsman_name" id="23">rohan raut</div>
+                    </div> -->
+                </div>
+                <!-- <select class="form-select mb-3 player_list" aria-label="Default select example">
+                    <option selected disabled>select player</option>
+                    <option value="Bowled">Bowled</option>
+                    <option value="Caught">Caught</option>
+                </select> -->
+                <!-- <button class="btn btn-danger" id="select_batsman_btn">Done</button> -->
+            </div>
+        </div>
+        <div class="over_complete_modal">
+            <div class="score-content">
+                <!-- <span class="close">&times;</span> -->
+                <div class="check_box">
+                    <div class="over_content">
+                        <img src="img/Vector (2).svg" alt="">
+                    </div>
+                </div>
+                <p>Over Complete</p>
+                <button class="btn btn-danger" id="next_over">start next over</button>
+                <button class="btn btn-secondary mt-3" id="this_over">continue this over</button>
+            </div>
+        </div>
+        <div class="select_bowler_modal">
+            <div class="player_content">
+                <p>select new bowler</p>
+                <!-- <div class="player_list">
+                    <div class="player_detail">
+                        <div class="player_profile">
+                            <img src="img/cricket_player.svg" alt="">
+                        </div>
+                        <div class="bowler_name">nikhil Patel</div>
+                    </div>
+                    <div class="player_detail">
+                        <div class="player_profile">
+                            <img src="img/cricket_player.svg" alt="">
+                        </div>
+                        <div class="bowler_name">rohan raut</div>
+                    </div>
+                </div> -->
+                <select class="form-select mb-3 player_list" aria-label="Default select example">
+                    <!-- <option selected disabled>select player</option> -->
+                    <!-- <option value="Bowled">Bowled</option>
+                    <option value="Caught">Caught</option> -->
+                </select>
+                <button class="btn btn-danger" id="select_bowler_btn">Done</button>
+            </div>
+        </div>
+        <div class="dropped_catch_modal">
+            <div class="dropped_catch_content">
+                <p>who dropped the catch ?</p>
+                <div class="run_button">
+                    <button>1</button>
+                    <button>2</button>
+                    <button>3</button>
+                    <button>4</button>
+                    <button>5</button>
+                    <button>6</button>
+                </div>
+                <div class="filder_list">
+                    <!-- <div class="filder_detail">
+                        <div class="filder_profile">
+                            <img src="img/filder.svg" alt="">
+                        </div>
+                        <div class="filder_name">nikhil Patel</div>
+                    </div>
+                    <div class="filder_detail">
+                        <div class="filder_profile">
+                            <img src="img/filder.svg" alt="">
+                        </div>
+                        <div class="filder_name">nikhil Patel</div>
+                    </div>
+                    <div class="filder_detail">
+                        <div class="filder_profile">
+                            <img src="img/filder.svg" alt="">
+                        </div>
+                        <div class="filder_name">nikhil Patel</div>
+                    </div>
+                    <div class="filder_detail">
+                        <div class="filder_profile">
+                            <img src="img/filder.svg" alt="">
+                        </div>
+                        <div class="filder_name">nikhil Patel</div>
+                    </div> -->
+                </div>
+                <button class="btn btn-secondary " id="cancel">cancle</button>
+                <button class="btn btn-danger" id="done">done</button>
+            </div>
+        </div>
+        <div class="save_missed_run_modal">
+            <div class="save_miss_run_content">
+                <p>runs saved/missed</p>
+                <div class="run_type">
+                    <input type="radio" class="run_miss_save_input" name="run_save" id="2" value="run saved"><span>run saved</span>
+                    <input type="radio" class="run_miss_save_input" name="run_save" id="3" value="run missed"><span>run missed</span>
+                </div>
+                <div class="run_button">
+                    <button>1</button>
+                    <button>2</button>
+                    <button>3</button>
+                    <button>4</button>
+                    <button>5</button>
+                    <button>6</button>
+                </div>
+                <div class="filder_list">
+                    <!-- <div class="filder_detail">
+                        <div class="filder_profile">
+                            <img src="img/filder.svg" alt="">
+                        </div>
+                        <div class="filder_name">nikhil Patel</div>
+                    </div>
+                    <div class="filder_detail">
+                        <div class="filder_profile">
+                            <img src="img/filder.svg" alt="">
+                        </div>
+                        <div class="filder_name">nikhil Patel</div>
+                    </div>
+                    <div class="filder_detail">
+                        <div class="filder_profile">
+                            <img src="img/filder.svg" alt="">
+                        </div>
+                        <div class="filder_name">nikhil Patel</div>
+                    </div>
+                    <div class="filder_detail">
+                        <div class="filder_profile">
+                            <img src="img/filder.svg" alt="">
+                        </div>
+                        <div class="filder_name">nikhil Patel</div>
+                    </div> -->
+                </div>
+                <div class="ok_btn">
+                    <button class="btn btn-secondary " id="cancel">cancle</button>
+                    <button class="btn btn-danger" id="save_miss_btn">done</button>
+                </div>
+            </div>
+        </div>
+        <div class="change_keeper_modal">
+            <div class="change_keeper_content">
+                <p>change keeper</p>
+                <div class="filder_list">
+                    <!-- <div class="filder_detail">
+                        <div class="filder_profile">
+                            <img src="img/wicketKeeper.svg" alt="">
+                        </div>
+                        <div class="filder_name">nikhil Patel</div>
+                    </div>
+                    <div class="filder_detail">
+                        <div class="filder_profile">
+                            <img src="img/wicketKeeper.svg" alt="">
+                        </div>
+                        <div class="filder_name">nikhil Patel</div>
+                    </div>
+                    <div class="filder_detail">
+                        <div class="filder_profile">
+                            <img src="img/wicketKeeper.svg" alt="">
+                        </div>
+                        <div class="filder_name">nikhil Patel</div>
+                    </div>
+                    <div class="filder_detail">
+                        <div class="filder_profile">
+                            <img src="img/wicketKeeper.svg" alt="">
+                        </div>
+                        <div class="filder_name">nikhil Patel</div>
+                    </div> -->
+                </div>
+                <button class="btn btn-secondary change_keeper_close">cancle</button>
+                <button class="btn btn-danger" id="change_keeper_btn">done</button>
+            </div>
+        </div>
+        <div class="match_break_modal">
+            <div class="match_break_content">
+                <p>match breaks</p>
+                <div class="break_button">
+                    <button class="btn btn-primary">drink</button>
+                    <button class="btn btn-primary">lunch</button>
+                    <button class="btn btn-primary">strategic timeout</button>
+                    <button class="btn btn-primary">rain</button>
+                </div>
+            </div>
+        </div>
+        <div class="change_team_modal">
+            <div class="change_team_content">
+                <p>change team</p>
+                <div class="player_list">
+                    <div class="player_detail">
+                        <div class="player_profile">
+                            <img src="img/wicketKeeper.svg" alt="">
+                        </div>
+                        <div class="player_name">nikhil Patel</div>
+                    </div>
+                    <div class="player_detail">
+                        <div class="player_profile">
+                            <img src="img/wicketKeeper.svg" alt="">
+                        </div>
+                        <div class="player_name">nikhil Patel</div>
+                    </div>
+                    <div class="player_detail">
+                        <div class="player_profile">
+                            <img src="img/wicketKeeper.svg" alt="">
+                        </div>
+                        <div class="player_name">nikhil Patel</div>
+                    </div>
+                    <div class="player_detail">
+                        <div class="player_profile">
+                            <img src="img/wicketKeeper.svg" alt="">
+                        </div>
+                        <div class="player_name">nikhil Patel</div>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <button class="btn btn-secondary">cancle</button>
+                    <button class="btn btn-danger" id="change_player">done</button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="menu">
+                    <button class="btn btn-success py-3 dropped">dropped catch</button>
+                    <button class="btn btn-success py-3 save_miss_run">run saved/missed</button>
+                    <button class="btn btn-success py-3 change_keeper">change keeper</button>
+                    <button class="btn btn-success py-3">full scorecard</button>
+                    <button class="btn btn-success py-3 change_team">change team</button>
+                    <button class="btn btn-success py-3 break_btn">match breack</button>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="total-score border border-dark">
+                    <!-- 200/<span>2</span><span>(18/20)</span> -->
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="batman-score">
+                    <!-- <div class="player">
+                            <div class="playerName">rohit sharma</div>
+                            <div class="playerrun">50 <span>(20)</span></div>
+                        </div>
+                        <div class="player">
+                            <div class="playerName">shudhman gill</div>
+                            <div class="playerrun">20 <span>(10)</span></div>
+                        </div> -->
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="bowler">
+                    <!-- <div class="player">
+                                <div class="playerName"  id="6986">rohit sharma</div>
+                                <div class="bowlerrun">0-1<span>0.2</span></div>
+                            </div> -->
+                    </div>
+                    <div class="over-ball">
+                        <!-- <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div> -->
+                    </div>
+            </div>
+        </div>
+        <div class="score-insert">
+            <button class="btn btn-primary">0</button>
+            <button class="btn btn-primary">1</button>
+            <button class="btn btn-primary">2</button>
+            <button class="btn btn-primary">3</button>
+            <button class="btn btn-primary">4</button>
+            <button class="btn btn-primary">6</button>
+            <!-- <button class="btn btn-primary">5,7</button> -->
+        </div>
+        <button class="btn btn-primary exatra_run" id="WD">WD</button>
+        <button class="btn btn-primary exatra_run" id="LB">LB</button>
+        <button class="btn btn-primary exatra_run" id="NB">NB</button>
+        <button class="btn btn-primary exatra_run" id="BYE">BYE</button>
+        <button class="btn btn-danger exatra_run" id="out">out</button>
+        <button class="btn btn-primary exatra_run" id="undo">undo</button>
+    </div>
+   
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+        crossorigin="anonymous"></script>
+    <script src="js/score.js"></script>
+</body>
+
+</html>

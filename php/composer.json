@@ -1,0 +1,6 @@
+{
+    "require": {
+        "mongodb/mongodb": "^1.16",
+        "twilio/sdk": "^7.11"
+    }
+}
