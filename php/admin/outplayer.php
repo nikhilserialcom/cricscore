@@ -33,6 +33,7 @@ $checkMatch = $matchCollection->findOne($matchFilter);
 if ($checkMatch) {
     if ($checkMatch['team1_id'] == $teamId) {
         $oldover = $checkMatch['team1_over'];
+        $oldteam1wicket = $checkMatch['team1_wicket'];
         foreach ($checkMatch['team_1'] as &$batsman) {
             if ($batsman['_id'] == $batsmanId) {
                 $batsman['bat_wicket'] = $out_style;
@@ -44,6 +45,7 @@ if ($checkMatch) {
             if($bowler['_id'] == $bowlerId)
             {
                 $bowler['ball_wicket'] += 1;
+                $team1Wicket = $oldteam1wicket + 1;
                 if($bowler['ball_over']  * 10 % 10 < 5)
                 {
                     $bowler['ball_over'] = round($bowler['ball_over'] + 0.1, 1);
@@ -63,7 +65,8 @@ if ($checkMatch) {
             '$set' => [
                 'team_1' => $checkMatch['team_1'],
                 'team_2' => $checkMatch['team_2'],
-                'team1_over' => $totalTeam1over
+                'team1_over' => $totalTeam1over,
+                'team1_wicket' => $team1Wicket
             ]
         ];
 

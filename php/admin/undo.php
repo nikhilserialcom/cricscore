@@ -33,15 +33,43 @@ if($checkMatch)
     {
         if($batsman['_id'] == $batsmanId)
         {
-            if($removeRun == "1")
+            if($removeRun == "1" || $removeRun == "3")
             {
                 $batsman['bat_liveRun'] = $batsman['bat_liveRun'] - $removeRun;
                 $batsman['bat_ball']--;
+                $striker = $batsmanId;
+                $non_striker = $checkMatch['striker'];
+            }
+            elseif($removeRun == "4")
+            {
+                $batsman['bat_liveRun'] = $batsman['bat_liveRun'] - $removeRun;
+                $batsman['bat_ball']--;
+                $batsman['bat_4'] --;
+                $striker = $batsmanId;
+                $non_striker = $checkMatch['non_striker'];
+            }
+            elseif($removeRun == "6")
+            {
+                $batsman['bat_liveRun'] = $batsman['bat_liveRun'] - $removeRun;
+                $batsman['bat_ball']--;
+                $batsman['bat_6'] --;
+                $striker = $batsmanId;
+                $non_striker = $checkMatch['non_striker'];
+            }
+            elseif($removeRun == "0")
+            {
+                $batsman['bat_ball'] --;
+                $striker = $batsmanId;
+                $non_striker = $checkMatch['non_striker'];
+                $striker = $batsmanId;
+                $non_striker = $checkMatch['non_striker'];
             }
             else
             {
                 $batsman['bat_liveRun'] = $batsman['bat_liveRun'] - $removeRun;
                 $batsman['bat_ball']--;
+                $striker = $batsmanId;
+                $non_striker = $checkMatch['non_striker'];
             }
         }
     }
@@ -52,7 +80,7 @@ if($checkMatch)
         {
             
             $bowler['ball_liveRun'] = $bowler['ball_liveRun'] - $removeRun;
-            if($bowler['ball_over']  * 10 % 10 < 5)
+            if($bowler['ball_over']  * 10 % 10 <= 5)
             {
                 $bowler['ball_over'] = round($bowler['ball_over'] - 0.1, 1);
                 $totalTeam1over = round($oldover - 0.1,1);
@@ -81,6 +109,8 @@ if($checkMatch)
         '$set' => [
             'team1_score' => $totalteamScore,
             'team1_over' => $totalTeam1over,
+            'striker' => $striker,
+            'non_striker' => $non_striker,
             'team_1' => $checkMatch['team_1'],
             'team_2' => $checkMatch['team_2']
         ]

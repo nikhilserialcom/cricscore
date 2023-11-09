@@ -52,11 +52,17 @@
         </div>
         <div class="undo_modal">
             <div class="score-content">
-                <span class="close" id="closeUndoModalBtn">&times;</span>
-                <p>undo</p>
-                <!-- <input type="text" id="score_model_input" class="form-control">
-                <p class="note">4 and 6 won't be considered as boundaries.</p>
-                <button class="btn btn-primary mt-2" id="submit_btn">ok</button> -->
+                <div class="check_box">
+                    <div class="over_content">
+                        <img src="img/undo.svg" alt="">
+                    </div>
+                </div>
+                <p>undo?</p>
+                <p class="last_ball_undo">undo the last ball for sure ?</p>
+                <div class="undo_btn">
+                    <button class="btn btn-secondary" id="closeUndoModalBtn">cancle</button>
+                    <button class="btn btn-danger" id="submit_undo">yes,i'm sure</button>
+                </div>
             </div>
         </div>
         <div class="out_modal">

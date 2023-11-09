@@ -36,6 +36,7 @@ const BYE_btn = document.getElementById('BYE');
 const submit_nb_btn = document.getElementById('nb_btn');
 const lagby_btn = document.getElementById('lagby_btn');
 const submit_out = document.getElementById('submit_out');
+const submit_undo = document.getElementById('submit_undo');
 const submit_bye_btn = document.getElementById('bye_btn');
 const select_bowler_btn = document.getElementById('select_bowler_btn');
 const cancle_btn = document.getElementById('cancel');
@@ -46,6 +47,8 @@ var closeModalBtn = document.getElementById('closeModalBtn');
 const closeUndoModalBtn = document.getElementById('closeUndoModalBtn');
 const closelagbyModalBtn = document.getElementById('closelagbyModalBtn');
 const classOutModalBtn = document.getElementById('classOutModalBtn');
+const closebyeModalBtn = document.getElementById('closebyeModalBtn');
+const closeNoBowlModalBtn = document.getElementById('closeNoBowlModalBtn');
 const score_nobowl_model_input = document.getElementById('score_nobowl_model_input');
 const score_modal_input = document.getElementById('score_model_input');
 const score_lagby_model_input = document.getElementById('score_lagby_model_input');
@@ -57,6 +60,7 @@ var player_id;
 var bowler_Id;
 var batsman_Id;
 var striker;
+var non_striker;
 
 const showscoreUrl = 'php/admin/showScore.php';
 const showFilderUrl = 'php/admin/showallplayer.php';
@@ -85,6 +89,7 @@ var showScore = () => {
             // console.log(json);
             score = json.match;
             striker = score.striker;
+            non_striker = score.non_striker;
             // console.log(striker);
             if (json.status_code == 200) {
                 // console.log(score);
@@ -159,6 +164,16 @@ showRun = (run) => {
     // console.log(run);
     const over_ball = document.querySelector('.over-ball');
     var runDiv = document.createElement("div");
+    // if(run == "W")
+    // {
+    //     runDiv.style.background = 'red';
+    //     runDiv.style.color = 'white';
+    // }
+    // else if(run == "4")
+    // {
+    //     runDiv.style.background = #C5FFB0;
+    //     runDiv.style.color = 'white';
+    // }
 
     runDiv.textContent = run;
 
@@ -184,7 +199,7 @@ var add_score = (scoreInput, bowler_Id, striker, ballStatus) => {
     })
         .then(response => response.json())
         .then(json => {
-            console.log(json);
+            // console.log(json);
             const over_data = json.over;
             if (json.status_code == 200) {
                 showScore();
@@ -243,19 +258,33 @@ var undo = (match_id,last_run,bowler_Id, striker) => {
             if(json.status_code == 200)
             {
                 showScore();
+                undo_modal.style.display = 'none';
             }
         })
 }
 
 undo_btn.addEventListener('click', () => {
+    undo_modal.style.display = 'block';
+    var icon = document.querySelector('.icon');
+    icon.style.zIndex = '-1';
+})
+
+submit_undo.addEventListener('click', () => {
     const over_ball = document.querySelector('.over-ball');
     const match_id = "65364c7e999af96e2f0d3ba7";
+    var batman_id;
     const lastdiv = over_ball.lastElementChild;
-    if(lastdiv){
-        // console.log(lastdiv.textContent);
-        over_ball.removeChild(lastdiv);
-        undo(match_id,lastdiv.textContent,bowler_Id,striker);
+    if(lastdiv.textContent == "1" || lastdiv.textContent == "3"){
+        // console.log(non_striker);
+        batman_id = non_striker;
     }
+    else
+    {
+        batman_id = striker;
+    }
+    // console.log(batman_id);
+    over_ball.removeChild(lastdiv);
+    undo(match_id,lastdiv.textContent,bowler_Id,batman_id);
 })
 
 lb_btn.addEventListener('click', () => {
@@ -333,12 +362,14 @@ closeUndoModalBtn.addEventListener('click', () => {
 
 closeModalBtn.addEventListener('click', () => {
     wide_ball.style.display = 'none';
+    score_modal_input.value = '';
     var icon = document.querySelector('.icon');
     icon.style.zIndex = '1';
 })
 
 closelagbyModalBtn.addEventListener('click', () => {
     lagby_modal.style.display = 'none';
+    score_lagby_model_input.value = '';
 })
 
 classOutModalBtn.addEventListener('click', () => {
@@ -439,7 +470,7 @@ var outPlayer = (select_out, batsman_Id, bowler_Id) => {
 submit_out.addEventListener('click', () => {
     const select_out = document.querySelector('.select_batsman');
     outPlayer(select_out.value, striker, bowler_Id);
-    // showRun(out_btn.textContent);
+    showRun("W");
 })
 
 const showBowlerUrl = 'php/admin/showbowler.php';
@@ -589,7 +620,7 @@ const showFilder = (match_id, team_id) => {
                 filder_list.forEach(element => {
                     element.innerHTML = filder_name.map(val => {
                         const { _id, playerName } = val;
-
+                        // const playerImage = playerProfile ? `<img src="php/${playerProfile}" alt="Profile Image">` : '<img src="img/filder.svg" alt="">';
                         return `
                         <div class="filder_detail">
                             <div class="filder_profile">
@@ -694,6 +725,16 @@ cancle_btn.addEventListener('click', () => {
     dropped_catch_modal.style.display = 'none';
 })
 
+closebyeModalBtn.addEventListener('click', () => {
+    bye_modal.style.display = 'none';
+    score_bye_model_input.value = '';
+})
+
+closeNoBowlModalBtn.addEventListener('click' ,() => {
+    NoBowl_modal.style.display = 'none';
+    score_nobowl_model_input.value = '';
+})
+
 save_miss_run_btn.addEventListener('click', () => {
     save_missed_run_modal.style.display = "block";
     const match_id = "65364c7e999af96e2f0d3ba7";
@@ -738,7 +779,8 @@ const matchbreake = (match_id, break_type) => {
 break_button.forEach(element => {
     element.addEventListener('click', () => {
         const match_id = "65364c7e999af96e2f0d3ba7";
-        matchbreake(match_id, element.textContent)
+        matchbreake(match_id, element.textContent);
+        match_break_modal.style.display = 'none';   
     })
 })
 
@@ -778,8 +820,9 @@ var showteamplayer = (team_id) => {
                 const player_list = document.querySelector('.change_team_modal .change_team_content .player_list');
 
                 player_list.innerHTML = player.map(val => {
-                    const { playerName } = val;
+                    const { playerName,playerProfile } = val;
                     const playerId = val._id;
+                    // const playerImage = playerProfile ? `<img src="php/${playerProfile}" alt="Profile Image">` : '<img src="img/filder.svg" alt="">';
                     return `
                     <div class="player_detail">
                         <div class="player_profile">
@@ -832,6 +875,11 @@ window.addEventListener('click', (event) => {
     }
     else if (event.target == out_modal) {
         out_modal.style.display = 'none';
+    }
+    else if(event.target == NoBowl_modal)
+    {
+        NoBowl_modal.style.display = 'none';
+        score_nobowl_model_input.value = '';
     }
     else if (event.target == bye_modal) {
         bye_modal.style.display = 'none';
