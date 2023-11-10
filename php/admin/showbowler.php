@@ -28,16 +28,30 @@ if($check_match)
 {
     if($check_match['team1_id'] == $teamId)
     {
+        foreach($check_match['team_1'] as $bowler)
+        {
+            if($bowler['_id'] != $check_match['bolwer'])
+            {
+                $bowlerList[] = $bowler;
+            }
+        }
         $response = array(
             'status_code' => 200,
-            'bowler' => $check_match['team_1']
+            'bowler' => $bowlerList
         );
     }
     elseif($check_match['team2_id'] == $teamId )
     {
+        foreach($check_match['team_2'] as $bowler)
+        {
+            if($bowler['_id'] != $check_match['bowler'])
+            {
+                $bowlerList[] = $bowler;
+            }
+        }
         $response = array(
             'status_code' => 200,
-            'bowler' => $check_match['team_2']
+            'bowler' => $bowlerList
         );
     }
     else

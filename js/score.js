@@ -3,12 +3,14 @@ let score_insert = document.querySelectorAll('.score-insert button');
 let batman_score = document.querySelector('.batman-score');
 let bowler_score = document.querySelector('.bowler');
 let total_score = document.querySelector('.total-score');
-const run_button = document.querySelectorAll('.run_button button');
+const run_button = document.querySelectorAll('.dropped_catch_modal .run_button button');
+const save_missed_run_button = document.querySelectorAll('.save_missed_run_modal .run_button button');
 const dropped_btn = document.querySelector('.dropped');
 const save_miss_run_btn = document.querySelector('.save_miss_run');
 const change_keeper_btn = document.querySelector('.change_keeper');
 const break_btn = document.querySelector('.break_btn');
 const change_team = document.querySelector('.change_team');
+
 
 var wide_ball = document.querySelector('.score-card .score_modal');
 const undo_modal = document.querySelector('.score-card .undo_modal');
@@ -42,6 +44,7 @@ const select_bowler_btn = document.getElementById('select_bowler_btn');
 const cancle_btn = document.getElementById('cancel');
 const change_keeper_close = document.querySelector('.change_keeper_close');
 const change_player_btn = document.getElementById('change_player');
+const save_miss_btn = document.getElementById('save_miss_btn');
 
 var closeModalBtn = document.getElementById('closeModalBtn');
 const closeUndoModalBtn = document.getElementById('closeUndoModalBtn');
@@ -61,6 +64,10 @@ var bowler_Id;
 var batsman_Id;
 var striker;
 var non_striker;
+var miss_filed;
+var select_value;
+var missrun;
+var filder_id;
 
 const showscoreUrl = 'php/admin/showScore.php';
 const showFilderUrl = 'php/admin/showallplayer.php';
@@ -120,11 +127,14 @@ var showScore = () => {
                 Array.from(playerNames).forEach(function (playerNameElement) {
                     var playerId = playerNameElement.id;
                     playerIds.push(playerId);
+                    
                 });
+
 
                 // Log the player IDs
                 playerIds.forEach(function (playerId) {
                     if (striker == playerId) {
+                        // console.log(playerId);
                         let striker_player = document.getElementById(playerId);
                         striker_player.classList.add('icon');
                     }
@@ -315,7 +325,7 @@ var showPlayer = () => {
     })
         .then(response => response.json())
         .then(json => {
-            // console.log(json);
+            console.log(json);
             const match = json.batsman
             if (json.status_code == 200) {
                 // console.log(match);
@@ -558,6 +568,14 @@ const dropcatch = (match_id, team_id, filder_id, missrun) => {
         .then(response => response.json())
         .then(json => {
             console.log(json);
+            if(json.status_code == 200)
+            {
+                const lastbutton = document.querySelector('.dropped_catch_modal .run_button .run_drop');
+                if(lastbutton)
+                {
+                    lastbutton.classList.remove('run_drop');
+                }
+            }
         })
 }
 
@@ -578,6 +596,18 @@ const missFiled = (match_id, team_id, filder_id, filedstatus, missrun) => {
         .then(response => response.json())
         .then(json => {
             console.log(json);
+            if(json.status_code == 200)
+            {
+                const lastbutton = document.querySelector('.dropped_catch_modal .run_button .run_drop');
+                if(lastbutton)
+                {
+                    lastbutton.classList.remove('run_drop');
+                }
+                const run_miss_save_input = document.querySelectorAll('.run_miss_save_input');
+                run_miss_save_input.forEach(radio => {
+                    radio.checked = false;
+                })
+            }
         })
 }
 
@@ -635,8 +665,7 @@ const showFilder = (match_id, team_id) => {
             }
             const player_list = document.querySelectorAll('.dropped_catch_modal .filder_list .filder_detail');
             const batsmanNameElement = document.querySelectorAll('.dropped_catch_modal .dropped_catch_content .filder_list .filder_detail .filder_name');
-            var filder_id;
-            var missrun;
+            
             // console.log(player_list);
             player_list.forEach((element, index) => {
                 // console.log(element);
@@ -646,50 +675,82 @@ const showFilder = (match_id, team_id) => {
                     // select_batsman_modal.style.display = 'none';
                 })
             })
-
-            run_button.forEach(element => {
+            
+            run_button.forEach((element) => {
                 element.addEventListener('click', () => {
-                    // console.log(element.textContent);
+                    // console.log(element);
                     missrun = element.textContent;
+                    const lastbutton = document.querySelector('.dropped_catch_modal .run_button .run_drop');
+                    if(lastbutton)
+                    {
+                        // console.log(lastbutton);
+                        lastbutton.classList.remove('run_drop');
+                    }
+                    element.classList.add('run_drop');
                 })
             })
 
-            const done_btn = document.getElementById('done');
-            done_btn.addEventListener('click', () => {
-                const match_id = "65364c7e999af96e2f0d3ba7";
-                const team_id = "652f7d3ae065cf214509e89a";
-                // console.log(filder_id);
-                dropcatch(match_id, team_id, filder_id, missrun);
-                dropped_catch_modal.style.display = "none";
-            })
+            save_missed_run_button.forEach(element => {
+                element.addEventListener('click', () => {
+                    missrun = element.textContent;
+                    const last_save_button = document.querySelector('.save_missed_run_modal .run_button .run_drop');
+                    if(last_save_button)
+                    {
+                        // console.log(last_save_button);
+                        last_save_button.classList.remove('run_drop');
+                    }
+                    element.classList.add('run_drop');
+                })
+            });
+
+            // const done_btn = document.getElementById('done');
+            // done_btn.addEventListener('click', () => {
+            //     const match_id = "65364c7e999af96e2f0d3ba7";
+            //     const team_id = "652f7d3ae065cf214509e89a";
+            //     // console.log(filder_id);
+            //     dropcatch(match_id, team_id, filder_id, missrun);
+            //     dropped_catch_modal.style.display = "none";
+            // })
 
             const filder_data = document.querySelectorAll('.save_missed_run_modal .filder_list .filder_detail');
             const filderElement = document.querySelectorAll('.save_missed_run_modal .filder_list .filder_detail .filder_name');
-            let miss_filed;
+            const playerProfile = document.querySelector('.save_missed_run_modal .save_miss_run_content .filder_list .filder_detail .filder_profile');
             filder_data.forEach((element, index) => {
+                // console.log(element);
                 element.addEventListener('click', () => {
+                    console.log(filderElement[index]);
+                    const lastplayer = document.querySelector('.save_missed_run_modal .filder_list .bg_color');
+                    // const last_border = document.querySelector('.save_missed_run_modal .save_miss_run_content .filder_list .filder_detail .player_border')
+                    if(lastplayer)
+                    {
+                        lastplayer.classList.remove('bg_color');
+        
+                    }
+                    element.classList.add('bg_color');
                     miss_filed = filderElement[index].getAttribute('id');
                     // console.log(filderElement[index].getAttribute('id'));
                 })
             })
 
             const run_miss_save_input = document.querySelectorAll('.run_miss_save_input');
-            let select_value;
+            
             run_miss_save_input.forEach(radio => {
                 radio.addEventListener('input', () => {
-                    // console.log(radio.value);
+                    // console.log(radio);
                     select_value = radio.value;
                 })
             });
 
 
-            const save_miss_btn = document.getElementById('save_miss_btn');
-            save_miss_btn.addEventListener('click', () => {
-                const match_id = "65364c7e999af96e2f0d3ba7";
-                const team_id = "652f7d3ae065cf214509e89a";
-                missFiled(match_id, team_id, miss_filed, select_value, missrun);
-                save_missed_run_modal.style.display = 'none';
-            })
+            
+            // save_miss_btn.addEventListener('click', () => {
+            //     const match_id = "65364c7e999af96e2f0d3ba7";
+            //     const team_id = "652f7d3ae065cf214509e89a";
+            //     // console.log('saved run feiled' + miss_filed);
+            //     console.log('hello');
+            //     // missFiled(match_id, team_id, miss_filed, select_value, missrun);
+            //     save_missed_run_modal.style.display = 'none';
+            // })
 
             const wicket_keeper_data = document.querySelectorAll('.change_keeper_modal .change_keeper_content .filder_list .filder_detail');
             const wicket_keeper_element = document.querySelectorAll('.change_keeper_modal .change_keeper_content .filder_list .filder_detail .filder_name');
@@ -711,6 +772,24 @@ const showFilder = (match_id, team_id) => {
             })
         })
 }
+
+const done_btn = document.getElementById('done');
+done_btn.addEventListener('click', () => {
+    const match_id = "65364c7e999af96e2f0d3ba7";
+    const team_id = "652f7d3ae065cf214509e89a";
+    // console.log(filder_id);
+    dropcatch(match_id, team_id, filder_id, missrun);
+    dropped_catch_modal.style.display = "none";
+})
+
+save_miss_btn.addEventListener('click', () => {
+    const match_id = "65364c7e999af96e2f0d3ba7";
+    const team_id = "652f7d3ae065cf214509e89a";
+    // console.log('saved run feiled' + miss_filed);
+    console.log('hello');
+    missFiled(match_id, team_id, miss_filed, select_value, missrun);
+    save_missed_run_modal.style.display = 'none';
+})
 
 dropped_btn.addEventListener('click', () => {
     dropped_catch_modal.style.display = 'block';
@@ -890,9 +969,19 @@ window.addEventListener('click', (event) => {
     }
     else if (event.target == dropped_catch_modal) {
         dropped_catch_modal.style.display = 'none';
+        const lastbutton = document.querySelector('.dropped_catch_modal .run_button .run_drop');
+        if(lastbutton)
+        {
+            lastbutton.classList.remove('run_drop');
+        }
     }
     else if (event.target == save_missed_run_modal) {
         save_missed_run_modal.style.display = 'none';
+        const lastbutton = document.querySelector('.save_missed_run_modal .run_button .run_drop');
+        if(lastbutton)
+        {
+            lastbutton.classList.remove('run_drop');
+        }
     }
     else if (event.target == change_keeper_modal) {
         change_keeper_modal.style.display = 'none';

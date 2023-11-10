@@ -13,6 +13,11 @@
     --primary-color: #920000;
 }
 
+.player_border{
+    border: 1.5px solid #ffffff;
+    border-radius: 50%;
+}
+
 .error {
     color: red;
     font-size: 14px;
@@ -6812,6 +6817,8 @@ input[type="number"]::-webkit-inner-spin-button {
     position: relative;
 }
 
+
+
 .icon::before {
     content: '\f621';
     position: absolute;
@@ -7109,10 +7116,22 @@ input[type="number"]::-webkit-inner-spin-button {
     background: transparent;
 }
 
+/* .dropped_catch_modal .dropped_catch_content .run_button .run_drop
+{
+    background-color: #2BC48A;
+    border: transparent;
+    color: #ffffff;
+} */
+
 .dropped_catch_modal .dropped_catch_content .filder_list {
     /* border: 1px solid #000000; */
     width: 100%;
     padding: 10px;
+}
+
+.bg_color{
+    background:#444952 !important;
+    color: #ffffff;
 }
 
 .dropped_catch_modal .dropped_catch_content .filder_list .filder_detail {
@@ -7189,6 +7208,13 @@ input[type="number"]::-webkit-inner-spin-button {
     background: transparent;
 }
 
+.run_drop
+{
+    background-color: #2BC48A !important;
+    border: transparent !important;
+    color: #ffffff;
+}
+
 .save_missed_run_modal .save_miss_run_content .filder_list {
     /* border: 1px solid #000000; */
     width: 100%;
@@ -7196,7 +7222,7 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 
 .save_missed_run_modal .save_miss_run_content .filder_list .filder_detail {
-    height: 35px;
+    height: 40px;
     margin-bottom: 10px;
     display: flex;
     align-items: center;

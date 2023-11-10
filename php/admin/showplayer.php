@@ -31,7 +31,7 @@ if($check_match)
         $outBatsmen = array();
         foreach($check_match['team_1'] as &$batsman)
         {
-            if($batsman['bat_status'] == "not out")
+            if(($batsman['bat_status'] == "not out") && ($batsman['_id'] != $check_match['non_striker']))
             {
                 $outBatsmen[] = $batsman;
             }

@@ -55,7 +55,7 @@ if ($checkMatch) {
                 {
                     $bowler['ball_over'] =  round($bowler['ball_over'] + 0.5, 1);
                     $totalTeam1over = round($oldover + 0.5,1);
-                    $striker = $check_player['non_striker'];
+                    $striker = $checkMatch['non_striker'];
                     $non_striker = $batsmanId;
                 }
             }

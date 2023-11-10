@@ -31,7 +31,10 @@ if($check_match)
         $outBatsmen = array();
         foreach($check_match['team_1'] as &$batsman)
         {
+            if($batsman['_id'] != $check_match['bowler'])
+            {
                 $outBatsmen[] = $batsman;
+            }
         }
 
         if(!empty($outBatsmen))
@@ -47,7 +50,10 @@ if($check_match)
         $outBatsmen = array();
         foreach($check_match['team_2'] as &$batsman)
         {
+            if($batsman['_id'] != $check_match['bowler'])
+            {
                 $outBatsmen[] = $batsman;
+            }
         }
 
         if(!empty($outBatsmen))
