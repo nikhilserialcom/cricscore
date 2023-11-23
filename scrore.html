@@ -70,10 +70,14 @@
                 <span class="close" id="classOutModalBtn">&times;</span>
                 <p>Out Player</p>
                 <select class="form-select select_batsman" aria-label="Default select example">
-                    <option selected disabled>select player</option>
+                    <option selected disabled>how to out</option>
                     <option value="Bowled">Bowled</option>
                     <option value="Caught">Caught</option>
                     <option value="Run_Out">Run Out</option> 
+                    <option value="Caught_behind">Caught Behind</option> 
+                    <option value="Caught_bowled">Caught & bowled</option> 
+                    <option value="stumped">Stumped</option>
+                    <option value="lbw">LBW</option> 
                 </select>
                 <button class="btn btn-danger mt-2" id="submit_out">ok</button>
             </div>
@@ -322,6 +326,11 @@
             <div class="col-md-12">
                 <div class="total-score border border-dark">
                     <!-- 200/<span>2</span><span>(18/20)</span> -->
+                </div>
+                <div class="break_content">
+                    <div class="timer">
+                        <span>00</span> : <span>00</span>
+                    </div>
                 </div>
             </div>
             <div class="col-md-6">

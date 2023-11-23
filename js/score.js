@@ -10,6 +10,9 @@ const save_miss_run_btn = document.querySelector('.save_miss_run');
 const change_keeper_btn = document.querySelector('.change_keeper');
 const break_btn = document.querySelector('.break_btn');
 const change_team = document.querySelector('.change_team');
+const break_content = document.querySelector('.break_content');
+const timerElement = document.querySelector('.timer');
+var remainingTime;
 
 
 var wide_ball = document.querySelector('.score-card .score_modal');
@@ -68,6 +71,7 @@ var miss_filed;
 var select_value;
 var missrun;
 var filder_id;
+var change_player_id = [];
 
 const showscoreUrl = 'php/admin/showScore.php';
 const showFilderUrl = 'php/admin/showallplayer.php';
@@ -174,16 +178,14 @@ showRun = (run) => {
     // console.log(run);
     const over_ball = document.querySelector('.over-ball');
     var runDiv = document.createElement("div");
-    // if(run == "W")
-    // {
-    //     runDiv.style.background = 'red';
-    //     runDiv.style.color = 'white';
-    // }
-    // else if(run == "4")
-    // {
-    //     runDiv.style.background = #C5FFB0;
-    //     runDiv.style.color = 'white';
-    // }
+   if(run == "4" && run == "6")
+    {
+        runDiv.style.background = '#C5FFB0';
+    }
+    elseif(run == "out")
+    {
+        runDiv.style.background = '#920000';
+    }
 
     runDiv.textContent = run;
 
@@ -218,6 +220,7 @@ var add_score = (scoreInput, bowler_Id, striker, ballStatus) => {
                     over_complete_modal.style.display = 'block';
                     over_complete_modal.style.zIndex = "99999";
                 }
+                score_modal_input.value = '';
             }
             else {
                 console.log(json.message);
@@ -360,6 +363,7 @@ var showPlayer = () => {
 
 out_btn.addEventListener('click', () => {
     out_modal.style.display = 'block';
+    out_modal.style.zIndex = '99';
     var icon = document.querySelector('.icon');
     icon.style.zIndex = '-1';
 })
@@ -515,6 +519,7 @@ var showBowler = () => {
 next_over.addEventListener('click', () => {
     over_complete_modal.style.display = 'none';
     select_bowler_modal.style.display = 'block';
+    select_bowler_modal.style.zIndex = '9';
     var icon = document.querySelector('.icon');
     icon.style.zIndex = '-1';
     showBowler();
@@ -671,6 +676,12 @@ const showFilder = (match_id, team_id) => {
                 // console.log(element);
                 element.addEventListener('click', () => {
                     // console.log(batsmanNameElement[index].getAttribute('id'));
+                    const last_player = document.querySelector('.dropped_catch_modal .filder_list .bg_color');
+                    if(last_player)
+                    {
+                        last_player.classList.remove('bg_color');
+                    }
+                    element.classList.add('bg_color');
                     filder_id = batsmanNameElement[index].getAttribute('id');
                     // select_batsman_modal.style.display = 'none';
                 })
@@ -758,6 +769,12 @@ const showFilder = (match_id, team_id) => {
             wicket_keeper_data.forEach((element, index) => {
                 element.addEventListener('click', () => {
                     // console.log(wicket_keeper_element[index].getAttribute('id'));
+                    const last_player = document.querySelector('.change_keeper_modal .change_keeper_content .filder_list .bg_color');
+                    if(last_player)
+                    {
+                        last_player.classList.remove('bg_color');
+                    }
+                    element.classList.add('bg_color');
                     wicket_keeper_id = wicket_keeper_element[index].getAttribute('id');
                 })
             })
@@ -786,7 +803,6 @@ save_miss_btn.addEventListener('click', () => {
     const match_id = "65364c7e999af96e2f0d3ba7";
     const team_id = "652f7d3ae065cf214509e89a";
     // console.log('saved run feiled' + miss_filed);
-    console.log('hello');
     missFiled(match_id, team_id, miss_filed, select_value, missrun);
     save_missed_run_modal.style.display = 'none';
 })
@@ -857,6 +873,76 @@ const matchbreake = (match_id, break_type) => {
 
 break_button.forEach(element => {
     element.addEventListener('click', () => {
+        const break_type = element.textContent;
+        // console.log(break_type);
+        if(break_type == 'drink'){
+            remainingTime = 120;
+            const timerInterval = setInterval(() => {
+                if(remainingTime == 0)
+                {
+                    clearInterval(timerInterval);
+                    timerElement.innerHTML = `<span>00</span> : <span>00</span>`;
+                    break_content.style.opacity = 0;
+                    break_content.style.transition = "opacity 2s ease";
+                    return;
+                }
+
+                const minutes = Math.floor(remainingTime / 60);
+                const seconds = remainingTime % 60;
+                const formattedTime = `<span>${minutes.toString().padStart(2,'0')}</span>:<span>${seconds.toString().padStart(2,'0')}</span>`;
+
+                timerElement.innerHTML = formattedTime;
+                remainingTime--;
+
+            },1000);
+            break_content.style.opacity = 1;
+        }
+        else if(break_type == 'lunch') {
+            remainingTime = 2400;
+            const timerInterval = setInterval(() => {
+                if(remainingTime == 0)
+                {
+                    clearInterval(timerInterval);
+                    timerElement.innerHTML = `<span>00</span> : <span>00</span>`;
+                    break_content.style.opacity = 0;
+                    break_content.style.transition = "opacity 2s ease";
+                    return;
+                }
+
+                const minutes = Math.floor(remainingTime / 60);
+                const seconds = remainingTime % 60;
+                const formattedTime = `<span>${minutes.toString().padStart(2,'0')}</span>:<span>${seconds.toString().padStart(2,'0')}</span>`;
+
+                timerElement.innerHTML = formattedTime;
+                remainingTime--;
+
+            },1000);
+            break_content.style.opacity = 1;
+        }
+        else if(break_type == 'strategic timeout')
+        {   
+            remainingTime = 20;
+            const timerInterval = setInterval(() => {
+                if(remainingTime == 0)
+                {
+                    clearInterval(timerInterval);
+                    timerElement.innerHTML = `<span>00</span> : <span>00</span>`;
+                    break_content.style.opacity = 0;
+                    break_content.style.transition = "opacity 2s ease";
+                    return;
+                }
+
+                const minutes = Math.floor(remainingTime / 60);
+                const seconds = remainingTime % 60;
+                const formattedTime = `<span>${minutes.toString().padStart(2,'0')}</span>:<span>${seconds.toString().padStart(2,'0')}</span>`;
+
+                timerElement.innerHTML = formattedTime;
+                remainingTime--;
+
+            },1000);
+            break_content.style.opacity = 1;
+
+        }
         const match_id = "65364c7e999af96e2f0d3ba7";
         matchbreake(match_id, element.textContent);
         match_break_modal.style.display = 'none';   
@@ -915,24 +1001,30 @@ var showteamplayer = (team_id) => {
 
             const player_list = document.querySelectorAll('.change_team_modal .change_team_content .player_list .player_detail');
             const batsmanNameElement = document.querySelectorAll('.change_team_modal .change_team_content .player_list .player_detail .player_name');
-            var player_id;
+            
             // console.log(player_list);
             player_list.forEach((element, index) => {
                 // console.log(element);
                 element.addEventListener('click', () => {
-                    player_id = batsmanNameElement[index].getAttribute('id');
+                    const last_player = document.querySelector('.change_team_modal .change_team_content .player_list .bg_color');
+                    if(last_player)
+                    {
+                        last_player.classList.remove('bg_color');
+                    }
+                    element.classList.add('bg_color');
+                    change_player_id = batsmanNameElement[index].getAttribute('id');
                 })
             })
 
-            change_player_btn.addEventListener('click', () => {
-                // console.log(player_id);
-                const match_id = "65364c7e999af96e2f0d3ba7";
-                addPlayer(match_id, team_id, player_id)
-                change_team_modal.style.display = "none";
-            })
         })
 }
-
+change_player_btn.addEventListener('click', () => {
+    console.log(change_player_id);
+    // const match_id = "65364c7e999af96e2f0d3ba7";
+    // addPlayer(match_id, team_id, player_id)
+    change_team_modal.style.display = "none";
+})
+    
 change_team.addEventListener('click', () => {
     change_team_modal.style.display = 'block';
     const team_id = "652f7d3ae065cf214509e89a";
