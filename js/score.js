@@ -241,12 +241,14 @@ const NoBowl_btn = document.getElementById('NB');
 
 wide_btn.addEventListener('click', () => {
     wide_ball.style.display = 'block';
+    wide_ball.classList.add('open_modal');
     var icon = document.querySelector('.icon')
     icon.style.zIndex = "-1";
 })
 
 NoBowl_btn.addEventListener('click', () => {
     NoBowl_modal.style.display = 'block';
+    NoBowl_modal.classList.add('open_modal');
     var icon = document.querySelector('.icon')
     icon.style.zIndex = "-1";
 })
@@ -278,6 +280,7 @@ var undo = (match_id,last_run,bowler_Id, striker) => {
 
 undo_btn.addEventListener('click', () => {
     undo_modal.style.display = 'block';
+    undo_modal.classList.add('open_modal');
     var icon = document.querySelector('.icon');
     icon.style.zIndex = '-1';
 })
@@ -302,12 +305,14 @@ submit_undo.addEventListener('click', () => {
 
 lb_btn.addEventListener('click', () => {
     lagby_modal.style.display = 'block';
+    lagby_modal.classList.add('open_modal');
     var icon = document.querySelector('.icon');
     icon.style.zIndex = '-1';
 })
 
 BYE_btn.addEventListener('click', () => {
     bye_modal.style.display = 'block';
+    bye_modal.classList.add('open_modal');
     var icon = document.querySelector('.icon');
     icon.style.zIndex = '-1';
 })
@@ -363,7 +368,7 @@ var showPlayer = () => {
 
 out_btn.addEventListener('click', () => {
     out_modal.style.display = 'block';
-    out_modal.style.zIndex = '99';
+    out_modal.classList.add('open_modal');
     var icon = document.querySelector('.icon');
     icon.style.zIndex = '-1';
 })
@@ -852,7 +857,7 @@ break_btn.addEventListener('click', () => {
     match_break_modal.style.display = 'block';
 })
 
-const break_button = document.querySelectorAll('.break_button button');
+const break_button = document.querySelectorAll('.break_button .break_type');
 
 const matchbreake = (match_id, break_type) => {
     fetch(matchbreakUrl, {
@@ -873,79 +878,79 @@ const matchbreake = (match_id, break_type) => {
 
 break_button.forEach(element => {
     element.addEventListener('click', () => {
-        const break_type = element.textContent;
-        // console.log(break_type);
-        if(break_type == 'drink'){
-            remainingTime = 120;
-            const timerInterval = setInterval(() => {
-                if(remainingTime == 0)
-                {
-                    clearInterval(timerInterval);
-                    timerElement.innerHTML = `<span>00</span> : <span>00</span>`;
-                    break_content.style.opacity = 0;
-                    break_content.style.transition = "opacity 2s ease";
-                    return;
-                }
+        const break_type = element.querySelector('span').innerHTML;
+        console.log(break_type);
+        // if(break_type == 'drink'){
+        //     remainingTime = 120;
+        //     const timerInterval = setInterval(() => {
+        //         if(remainingTime == 0)
+        //         {
+        //             clearInterval(timerInterval);
+        //             timerElement.innerHTML = `<span>00</span> : <span>00</span>`;
+        //             break_content.style.opacity = 0;
+        //             break_content.style.transition = "opacity 2s ease";
+        //             return;
+        //         }
 
-                const minutes = Math.floor(remainingTime / 60);
-                const seconds = remainingTime % 60;
-                const formattedTime = `<span>${minutes.toString().padStart(2,'0')}</span>:<span>${seconds.toString().padStart(2,'0')}</span>`;
+        //         const minutes = Math.floor(remainingTime / 60);
+        //         const seconds = remainingTime % 60;
+        //         const formattedTime = `<span>${minutes.toString().padStart(2,'0')}</span>:<span>${seconds.toString().padStart(2,'0')}</span>`;
 
-                timerElement.innerHTML = formattedTime;
-                remainingTime--;
+        //         timerElement.innerHTML = formattedTime;
+        //         remainingTime--;
 
-            },1000);
-            break_content.style.opacity = 1;
-        }
-        else if(break_type == 'lunch') {
-            remainingTime = 2400;
-            const timerInterval = setInterval(() => {
-                if(remainingTime == 0)
-                {
-                    clearInterval(timerInterval);
-                    timerElement.innerHTML = `<span>00</span> : <span>00</span>`;
-                    break_content.style.opacity = 0;
-                    break_content.style.transition = "opacity 2s ease";
-                    return;
-                }
+        //     },1000);
+        //     break_content.style.opacity = 1;
+        // }
+        // else if(break_type == 'lunch') {
+        //     remainingTime = 2400;
+        //     const timerInterval = setInterval(() => {
+        //         if(remainingTime == 0)
+        //         {
+        //             clearInterval(timerInterval);
+        //             timerElement.innerHTML = `<span>00</span> : <span>00</span>`;
+        //             break_content.style.opacity = 0;
+        //             break_content.style.transition = "opacity 2s ease";
+        //             return;
+        //         }
 
-                const minutes = Math.floor(remainingTime / 60);
-                const seconds = remainingTime % 60;
-                const formattedTime = `<span>${minutes.toString().padStart(2,'0')}</span>:<span>${seconds.toString().padStart(2,'0')}</span>`;
+        //         const minutes = Math.floor(remainingTime / 60);
+        //         const seconds = remainingTime % 60;
+        //         const formattedTime = `<span>${minutes.toString().padStart(2,'0')}</span>:<span>${seconds.toString().padStart(2,'0')}</span>`;
 
-                timerElement.innerHTML = formattedTime;
-                remainingTime--;
+        //         timerElement.innerHTML = formattedTime;
+        //         remainingTime--;
 
-            },1000);
-            break_content.style.opacity = 1;
-        }
-        else if(break_type == 'strategic timeout')
-        {   
-            remainingTime = 20;
-            const timerInterval = setInterval(() => {
-                if(remainingTime == 0)
-                {
-                    clearInterval(timerInterval);
-                    timerElement.innerHTML = `<span>00</span> : <span>00</span>`;
-                    break_content.style.opacity = 0;
-                    break_content.style.transition = "opacity 2s ease";
-                    return;
-                }
+        //     },1000);
+        //     break_content.style.opacity = 1;
+        // }
+        // else if(break_type == 'strategic timeout')
+        // {   
+        //     remainingTime = 20;
+        //     const timerInterval = setInterval(() => {
+        //         if(remainingTime == 0)
+        //         {
+        //             clearInterval(timerInterval);
+        //             timerElement.innerHTML = `<span>00</span> : <span>00</span>`;
+        //             break_content.style.opacity = 0;
+        //             break_content.style.transition = "opacity 2s ease";
+        //             return;
+        //         }
 
-                const minutes = Math.floor(remainingTime / 60);
-                const seconds = remainingTime % 60;
-                const formattedTime = `<span>${minutes.toString().padStart(2,'0')}</span>:<span>${seconds.toString().padStart(2,'0')}</span>`;
+        //         const minutes = Math.floor(remainingTime / 60);
+        //         const seconds = remainingTime % 60;
+        //         const formattedTime = `<span>${minutes.toString().padStart(2,'0')}</span>:<span>${seconds.toString().padStart(2,'0')}</span>`;
 
-                timerElement.innerHTML = formattedTime;
-                remainingTime--;
+        //         timerElement.innerHTML = formattedTime;
+        //         remainingTime--;
 
-            },1000);
-            break_content.style.opacity = 1;
+        //     },1000);
+        //     break_content.style.opacity = 1;
 
-        }
-        const match_id = "65364c7e999af96e2f0d3ba7";
-        matchbreake(match_id, element.textContent);
-        match_break_modal.style.display = 'none';   
+        // }
+        // const match_id = "65364c7e999af96e2f0d3ba7";
+        // matchbreake(match_id, element.textContent);
+        // match_break_modal.style.display = 'none';   
     })
 })
 
@@ -1034,30 +1039,37 @@ change_team.addEventListener('click', () => {
 window.addEventListener('click', (event) => {
     if (event.target == wide_ball) {
         wide_ball.style.display = 'none';
+        wide_ball.classList.remove('open_modal');
         score_modal_input.value = '';
     }
     else if (event.target == undo_modal) {
         undo_modal.style.display = 'none';
+        undo_modal.classList.remove('open_modal');
         score_nobowl_model_input.value = '';
     }
     else if (event.target == lagby_modal) {
         lagby_modal.style.display = 'none';
+        lagby_modal.classList.remove('open_modal');
         score_lagby_model_input.value = '';
     }
     else if (event.target == out_modal) {
         out_modal.style.display = 'none';
+        out_modal.classList.remove('open_modal');
     }
     else if(event.target == NoBowl_modal)
     {
         NoBowl_modal.style.display = 'none';
+        NoBowl_modal.classList.remove('open_modal');
         score_nobowl_model_input.value = '';
     }
     else if (event.target == bye_modal) {
         bye_modal.style.display = 'none';
+        bye_modal.classList.remove('open_modal');
         score_bye_model_input.value = '';
     }
     else if (event.target == over_complete_modal) {
         over_complete_modal.style.display = 'none';
+        over_complete_modal.classList.remove('open_modal');
     }
     else if (event.target == dropped_catch_modal) {
         dropped_catch_modal.style.display = 'none';

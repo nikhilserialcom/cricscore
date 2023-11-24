@@ -82,6 +82,50 @@
                 <button class="btn btn-danger mt-2" id="submit_out">ok</button>
             </div>
         </div>
+
+        <div class="player_out_modal">
+            <div class="out_content">
+                <p>how to out ?</p> 
+                <div class="out_style_list">
+                    <div class="out_style_content">
+                        <img src="img/bolwed.svg" alt="">
+                        <span>bowled</span> 
+                    </div>
+                    <div class="out_style_content">
+                        <img src="img/cricket_catch.svg" alt="">
+                        <span>caught</span>
+                    </div>
+                    <div class="out_style_content">
+                        <img src="img/Caught_Behind.svg" alt="">
+                        <span>caught behind</span>
+                    </div>
+                    <div class="out_style_content">
+                        <img src="img/Caught & bolwed.svg" alt="">
+                        <span>caught & bolwed</span>
+                    </div>
+                    <div class="out_style_content">
+                        <img src="img/stumped.svg" alt="">
+                        <span>stumped</span>
+                    </div>
+                    <div class="out_style_content">
+                        <img src="img/run_out.svg" alt="">
+                        <span>run out</span>
+                    </div>
+                    <div class="out_style_content">
+                        <img src="img/LBW.svg" alt="">
+                        <span>LBW</span>
+                    </div>
+                    <div class="out_style_content">
+                        <img src="img/hit_wicket.svg" alt="">
+                        <span>hit wicket</span>
+                    </div>
+                </div>
+                <div class="btn_list">
+                    <button class="btn btn-secondary">cancle</button>
+                    <button class="btn btn-danger">done</button>
+                </div>
+            </div>
+        </div>
         <div class="select_batsman_modal">
             <div class="batsman_content">
                 <p>select new batsman</p>
@@ -270,10 +314,36 @@
             <div class="match_break_content">
                 <p>match breaks</p>
                 <div class="break_button">
-                    <button class="btn btn-primary">drink</button>
-                    <button class="btn btn-primary">lunch</button>
-                    <button class="btn btn-primary">strategic timeout</button>
-                    <button class="btn btn-primary">rain</button>
+                    <div class="break_type">
+                        <div class="break_type_pic">
+                            <img src="img/drink.svg" alt="">
+                        </div>
+                        <span>drink</span>
+                    </div>
+                    <div class="break_type">
+                        <div class="break_type_pic">
+                            <img src="img/lunch.svg" alt="">
+                        </div>
+                        <span>lunch</span>
+                    </div>
+                    <div class="break_type">
+                        <div class="break_type_pic">
+                            <img src="img/stategic timeout.svg" alt="">
+                        </div>
+                        <span>strategic timeout</span>
+                    </div>
+                    <div class="break_type">
+                        <div class="break_type_pic">
+                            <img src="img/rain.svg" alt="">
+                        </div>
+                        <span>rain</span>
+                    </div>
+                    <div class="break_type">
+                        <div class="break_type_pic">
+                            <img src="img/other.svg" alt="">
+                        </div>
+                        <span>other</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -315,12 +385,43 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="menu">
-                    <button class="btn btn-success py-3 dropped">dropped catch</button>
-                    <button class="btn btn-success py-3 save_miss_run">run saved/missed</button>
-                    <button class="btn btn-success py-3 change_keeper">change keeper</button>
-                    <button class="btn btn-success py-3">full scorecard</button>
-                    <button class="btn btn-success py-3 change_team">change team</button>
-                    <button class="btn btn-success py-3 break_btn">match breack</button>
+                    <div class="menu_item dropped">
+                        <div class="menu_item_image">
+                            <img src="img/drop_caught.svg" alt="">
+                        </div>
+                        <span>dropped catch</span>
+                    </div>
+                    <div class="menu_item save_miss_run">
+                        <div class="menu_item_image">
+                            <img src="img/run_save_miss.svg" alt="">
+                        </div>
+                        <span>run saved/
+                            missed</span>
+                    </div>
+                    <div class="menu_item change_keeper">
+                        <div class="menu_item_image">
+                            <img src="img/change_kepper.svg" alt="">
+                        </div>
+                        <span>change keeper</span>
+                    </div>
+                    <div class="menu_item ">
+                        <div class="menu_item_image">
+                            <img src="img/scorecard.svg" alt="">
+                        </div>
+                        <span>full scorecard</span>
+                    </div>
+                    <div class="menu_item change_team">
+                        <div class="menu_item_image">
+                            <img src="img/change_team.svg" alt="">
+                        </div>
+                        <span>change team</span>
+                    </div>
+                    <div class="menu_item break_btn">
+                        <div class="menu_item_image">
+                            <img src="img/match_break.svg" alt="">
+                        </div>
+                        <span>match breack</span>
+                    </div>
                 </div>
             </div>
             <div class="col-md-12">
@@ -378,6 +479,25 @@
         <button class="btn btn-danger exatra_run" id="out">out</button>
         <button class="btn btn-primary exatra_run" id="undo">undo</button>
     </div>
+    <section class="d-flex justify-content-center mt-5 mb-5">
+        <div class="score_input">
+            <div class="run">0</div>
+            <div class="run">1</div>
+            <div class="run">2</div>
+            <div class="run">
+                <div class="sub_run">undo</div>
+                <div class="sub_run">out</div>
+            </div>
+            <div class="run">3</div>
+            <div class="run">4</div>
+            <div class="run">6</div>
+            <div class="run">5,7</div>
+            <div class="run">WD</div>
+            <div class="run">LB</div>
+            <div class="run">NB</div>
+            <div class="run">BYE</div>
+        </div>
+    </section>
    
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
