@@ -8,13 +8,15 @@ header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("content-type: application/json");
 
+session_start();
+
 $userCollection = $database->Users;
 
 function sendOtp($no,$otp)
 {
    
     $sid = "AC9df1a8f5bea5649437e9a9ab191dbbdd";
-    $token = "f08049b39e400d4fd4534568f0d4eede";
+    $token = "d9801bc63bc26de190877f3630684690";
     $client = new \Twilio\Rest\Client($sid,$token);
 
     $message = $client->messages->create(
@@ -57,7 +59,7 @@ if($check_mobileNumber) {
     if($updateOtp == "true")
     {
         $updateData = [
-            '$set' => ['otp' => $otp]
+            '$set' => ['otp' => $otp,'verifyStatus' => "0"]
         ];
         $updateOtpQuery = $userCollection->updateOne($mobileFilter,$updateData);
         if($updateOtpQuery)
@@ -92,6 +94,7 @@ else {
         $insertuserInfo = $userCollection->insertOne($documents);
 
         if ($insertuserInfo->getInsertedCount() > 0) {
+            $_SESSION['user_mobile'] = $mobileNumber;
             $response = [
                 'status_code' => '200',
                 'message' => 'otp has been send in your mobile number',

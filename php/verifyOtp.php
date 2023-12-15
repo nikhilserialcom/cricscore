@@ -1,5 +1,4 @@
 <?php 
-session_start();
 require 'partials/mongodbconnect.php';
 
 header("Access-Control-Allow-Origin: *");
@@ -8,6 +7,7 @@ header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("content-type: application/json");
 
 $userCollection = $database->Users;
+session_start();
 
 $data = json_decode(file_get_contents('php://input'),true);
 
@@ -21,7 +21,7 @@ $otp  = $data['userOtp'];
 
 // echo json_encode($response,JSON_PRETTY_PRINT);
 
-$mobileFilter = ['mobileNumber' => $mobile];
+$mobileFilter = ['mobileNumber' => $mobile, 'verifyOtp' => "0"];
 $check_number = $userCollection->findOne($mobileFilter);
 
 if ($check_number) {

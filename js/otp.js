@@ -1,10 +1,13 @@
 const continue_btn = document.querySelector('.continue_btn');
 const input = document.querySelectorAll('.otp_input');
 const inputField = document.querySelector('.box_1');
+const mobile_number_p = document.querySelector('.signin p');
 var verifyOTP_url = 'php/verifyOtp.php';
 var userId;
 
 // console.log(inputField);
+
+mobile_number_p.textContent = `We sent a confirmation code to ${localStorage.getItem('mobileNo')} `;
 
 let inputCount = 0,
     finalCount = "";
@@ -136,8 +139,7 @@ const verifyOTP = (mobile_number,otp) => {
             if(json.status_code == 200)
             {
                 // userId = json.userid;
-                // sessionStorage.setItem('userId',userId);
-                console.log(userId);    
+                // sessionStorage.setItem('userId',userId);   
             }
             else {
                 const otp_error = document.querySelector('.otp_error');
