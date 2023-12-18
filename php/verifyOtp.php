@@ -21,7 +21,7 @@ $otp  = $data['userOtp'];
 
 // echo json_encode($response,JSON_PRETTY_PRINT);
 
-$mobileFilter = ['mobileNumber' => $mobile, 'verifyOtp' => "0"];
+$mobileFilter = ['mobileNumber' => $mobile, 'verifyStatus' => "0"];
 $check_number = $userCollection->findOne($mobileFilter);
 
 if ($check_number) {

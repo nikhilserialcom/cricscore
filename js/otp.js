@@ -5,7 +5,7 @@ const mobile_number_p = document.querySelector('.signin p');
 var verifyOTP_url = 'php/verifyOtp.php';
 var userId;
 
-// console.log(inputField);
+console.log(localStorage.getItem('situation'));
 
 mobile_number_p.textContent = `We sent a confirmation code to ${localStorage.getItem('mobileNo')} `;
 
@@ -138,8 +138,13 @@ const verifyOTP = (mobile_number,otp) => {
             console.log(json);
             if(json.status_code == 200)
             {
-                // userId = json.userid;
-                // sessionStorage.setItem('userId',userId);   
+                if(localStorage.getItem('situation') == "update")
+                {
+                    window.location.href = "demo.html";
+                }
+                else{
+                    window.location.href = 'signin_select_city.html';  
+                }
             }
             else {
                 const otp_error = document.querySelector('.otp_error');
@@ -153,5 +158,4 @@ continue_btn.addEventListener('click', () => {
     const otp = validateOTP(input);
     console.log(otp);
     verifyOTP(mobile_number,otp);
-    window.location.href = 'signin_select_city.html';  
 })

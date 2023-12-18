@@ -249,7 +249,8 @@ const userInfo = (countryName, mobileNo) => {
         .then(json => {
             console.log(json);
             if (json.status_code == 200) {
-                window.location.href = 'otp.html';
+                localStorage.setItem('situation', json.situation);
+                // window.location.href = 'otp.html';
             } else if (json.status_code == 422) {
                 window.location.href = 'otp.html';
             } else {
@@ -265,6 +266,5 @@ continue_btn.addEventListener('click', () => {
         userInfo(countryName,mobileNumber);
         localStorage.setItem('country_id', unique_id);
         localStorage.setItem('mobileNo', mobileNumber);
-        window.location.href = 'otp.html';
     }
 })
