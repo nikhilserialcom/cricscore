@@ -10,6 +10,10 @@ const demo_data = () => {
         .then(response => response.json())
         .then(json => {
             console.log(json);
+            if(json.status_code == 400)
+            {
+                // window.location.href = "signin.html";
+            }
         })
 }
 

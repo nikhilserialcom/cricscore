@@ -250,9 +250,9 @@ const userInfo = (countryName, mobileNo) => {
             console.log(json);
             if (json.status_code == 200) {
                 localStorage.setItem('situation', json.situation);
-                // window.location.href = 'otp.html';
+                window.location.href = 'otp.php';
             } else if (json.status_code == 422) {
-                window.location.href = 'otp.html';
+                // window.location.href = 'otp.php';
             } else {
                 alert('somthing went worng');
             }

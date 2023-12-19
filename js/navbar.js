@@ -6,12 +6,61 @@ const search_icon = document.querySelector('.fa-magnifying-glass');
 const search_div_outer = document.querySelector('.search_div_outer');
 const search_div_inner = document.querySelector('.search_div_inner');
 const search_div_inner_input = document.querySelector('.search_div_inner input');
+const join_sign_in_div = document.querySelector('.join_sign_in_div');
+const icon_image_div = document.querySelector('.icon_image');
+const profile_img = icon_image_div.querySelector('img');
+const profile_menu = document.querySelector('.profile_menu');
 
+const profile_btn = document.querySelector('.profile_btn');
+
+const demo_url = 'php/demo.php';
+
+const check_session = () => {
+    fetch(demo_url, {
+        method: 'GET',
+        headers: {
+            'Content-type': 'application/json; charset=UTF-8',
+        },
+    })
+        .then(response => response.json())
+        .then(json => {
+            console.log(json);
+            if (json.status_code == 200) {
+                join_sign_in_div.style.display = "none";
+                icon_image_div.style.display = "block";
+            }
+            else if (json.status_code == 400) {
+                join_sign_in_div.style.display = "block";
+                icon_image_div.style.display = "none";
+                window.location.href = "signin.php";
+            }
+        })
+}
+
+check_session();
+
+const toggleProfileMenu = () => {
+    if (profile_menu.style.display === 'block') {
+        profile_menu.style.display = 'none';
+        profile_menu.classList.remove('animate__animated', 'animate__backInDown');
+    }
+    else {
+        profile_menu.style.display = 'block';
+        profile_menu.classList.add('animate__animated', 'animate__backInDown');
+        profile_menu.style.setProperty('--animate-duration', '1s');
+    }
+}
+
+icon_image_div.addEventListener('click',toggleProfileMenu);
+
+profile_btn.addEventListener('click', () => {
+    window.location.href = 'profile.php';
+})
 
 var check_window_click = (event) => {
     let target = event.target;
 
-    if(target != search_icon && target != fa_xmark && target != search_div_outer && target != search_div_inner && target != search_div_inner_input) {
+    if (target != search_icon && target != fa_xmark && target != search_div_outer && target != search_div_inner && target != search_div_inner_input) {
         search_div_outer.classList.remove('active');
         search_icon.classList.replace('fa-xmark', 'fa-magnifying-glass');
         window.removeEventListener('click', check_window_click);
@@ -44,10 +93,10 @@ var check_window_click_for_bars = (event) => {
         })
     })
 
-    if(valid_click == true && target != nav_ul && target != fa_bars) {
+    if (valid_click == true && target != nav_ul && target != fa_bars) {
         nav_ul.style.left = '-250px';
     }
-    
+
 }
 
 var func_for_click_on_bars = () => {

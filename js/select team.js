@@ -107,13 +107,11 @@ const getstatevalue = () => {
 Group.onclick = function () {
     // console.log(country_id);
     page.classList.add("openuser");
-    footer.style.display = "none";
     showState(country_id);
 }
 
 icon_i.onclick = function () {
     page.classList.remove("openuser");
-    footer.style.display = "flex";
 }
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -225,7 +223,7 @@ var showAllteam = (main_barcode) => {
 
 
 
-main_barcode.appendChild()
+// main_barcode.appendChild()
 
 list_ul[1].onclick = function () {
     resetactive();

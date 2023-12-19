@@ -1,77 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
-    <script src="js/select team.js" defer></script>
-
-    <title>Document</title>
-</head>
-
-<body>
-    <div class="app">
-        <nav>
-            <div class="inner">
-                <div class="main-logo">
-                    <i class="fa-solid fa-bars"></i>
-
-                    <li class="logo">
-                        <a href="">cricscorer</a>
-                    </li>
-                    <ul class="nav-ul">
-                        <i class="fa-solid fa-xmark" id="bars"></i>
-                        <li><a href="">Matches</a></li>
-                        <li><a href="">Tournament</a></li>
-                        <li><a href="">Ecosystem</a></li>
-                    </ul>
-                </div>
-                <div class="buttons" onclick="show_hide()">
-                    <div class="search_1">
-                        <img src="img/Group 10452.png" alt="">
-                        <!-- <input type="search" placeholder="search"> -->
-                    </div>
-
-
-                    <!-- <i class="fa-solid fa-magnifying-glass"></i> -->
-                    <!-- <button>log in</button> 
-                    <button>sign in</button> -->
-                </div>
-
-            </div>
-
-        </nav>
-        <div class="patel_1">
-            <div class="patel">
-                <div class="main_1">
-                    <div class="image">
-                        <img src="img/Group 10462.png" alt="">
-                    </div>
-                    <div class="text">
-                        <p>Yesh Patel</p>
-                        <button>Edit profile</button>
-                    </div>
-                </div>
-                <div class="text_1">
-                    <ul>
-                        <li><a href="">My Matches</a></li>
-                        <li><a href="">My Tournaments</a></li>
-                        <li><a href="">Organiser Admin</a></li>
-
-                    </ul>
-                </div>
-                <div class="text_2">
-                    <ul>
-                        <li><a href="">LOGOUT</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-
+<?php require_once('layout/header.php'); ?>
         <div class="outer_main_div">
             <div class="center">
                 <div class="heading">
@@ -152,31 +79,6 @@
             </div>
         </div>
     </div>
+    <script src="js/select team.js" defer></script>
 
-    <div class="main_footer">
-        <div class="main_footer_1">
-            <div class="sub_ul">
-                <ul>
-                    <li>About</li>
-                    <li>FAQs</li>
-                    <li>Teams</li>
-                    <li>Contact Us</li>
-                </ul>
-            </div>
-            <div class="sub_ul_1">
-                <ul>
-                    <li><i class="fa-brands fa-facebook-f"></i></li>
-                    <li><i class="fa-brands fa-twitter"></i></li>
-                    <li><i class="fa-brands fa-telegram"></i></li>
-                    <li><i class="fa-brands fa-instagram"></i></li>
-                    <li><i class="fa-brands fa-linkedin-in"></i></li>
-
-
-                </ul>
-            </div>
-        </div>
-
-    </div>
-</body>
-
-</html>
+<?php require_once('layout/footer.php'); ?>
