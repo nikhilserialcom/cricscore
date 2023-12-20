@@ -427,5 +427,5 @@
     <div class="last_btn">
         <button>Next <i class="fa-solid fa-arrow-right"></i></button>
     </div>
-    <!-- <script src="js/demo.js" defer></script> -->
+    <script src="js/demo.js" defer></script>
 <?php require_once("layout/footer.php"); ?>

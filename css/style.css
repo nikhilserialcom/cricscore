@@ -13,6 +13,10 @@
     --primary-color: #920000;
 }
 
+.spad {
+    margin: 100px 0px;
+}
+
 
 a {
     text-decoration: none;
@@ -5219,12 +5223,9 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 
 .center {
-    padding-top: 8%;
     display: flex;
     justify-content: center;
     padding-bottom: 10%;
-
-
 }
 
 .center .heading {
@@ -5252,21 +5253,24 @@ input[type="number"]::-webkit-inner-spin-button {
     cursor: pointer;
 }
 
-.center .heading .sci {
+.center .heading .sci,
+.center .heading .Group {
     display: flex;
     gap: 10px;
+    align-items: center;
+    justify-content: center;
     flex-direction: column;
 }
 
-.center .heading .sci img {
-    width: 100%;
-
-
-}
-
-.center .heading .vs img {
+.center .heading .sci img,
+.center .heading .vs img,
+.center .heading .Group img  {
     width: 100%;
 }
+
+/* .center .heading .vs img {
+    width: 100%;
+} */
 
 .center .heading .sci p {
     text-align: center;
@@ -5289,10 +5293,10 @@ input[type="number"]::-webkit-inner-spin-button {
 
 }
 
-.center .heading .Group img {
-    width: 60%;
+/* .center .heading .Group img {
+    width: 100%;
 
-}
+} */
 
 .center .heading .Group p {
     font-weight: 600;
@@ -5363,21 +5367,49 @@ input[type="number"]::-webkit-inner-spin-button {
     display: none;
     position: fixed;
     width: 100%;
+    height: 100%;
     background: rgba(0, 0, 0, 0.5);
     top: 0;
+}
+
+.outer_all,.my_team,.search_team{
+    display: none;
+}
+
+.active{
+    display: block;
 }
 
 .outer_page {
     display: block;
 }
+.my_team .my_team_list {
+    overflow: auto;
+    height: 350px;
+    scroll-behavior: smooth;
+    margin-bottom: 20px;
+}
+.my_team .select_team_btn {
+    /* border:  1px solid #000000; */
+
+    display: flex;
+    justify-content: center;
+}
+
+.my_team .select_team_btn button {
+    background: var(--primary-color);
+    border-radius: 5px;
+    font-weight: 700;
+    font-size: 12px;
+    color: #FFFFFF;
+    border: none;
+    padding: 10px 40px;
+    cursor: pointer;
+}
 
 .page .sub_page {
     background-color: #FFF;
-    height: 530px;
-    width: 45%;
-    gap: 10px;
-    display: flex;
-    flex-direction: column;
+    width: 60%;
     border-radius: 5px;
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
@@ -5461,6 +5493,16 @@ input[type="number"]::-webkit-inner-spin-button {
     display: flex;
     flex-direction: column;
     gap: 20px;
+}
+
+.page .sub_page .main_list .list_2 input{
+    border: none;
+    padding: 10px;
+    border-bottom: 1px solid #000000;
+}
+
+.page .sub_page .main_list .list_2 input:focus{
+    outline: none;
 }
 
 .page .sub_page .main_list .list_2 .state {
@@ -5622,7 +5664,7 @@ input[type="number"]::-webkit-inner-spin-button {
     padding-top: 15px;
 }
 
-.page .sub_page button {
+.page .sub_page .search_team .btn_1 button {
     width: 20%;
     display: flex;
     justify-content: center;

@@ -15,7 +15,7 @@ function sendOtp($no,$otp)
 {
    
     $sid = "AC2014df18a9e354053a153ad15e381ff8";
-    $token = "3fa1f795132daa5f8b17d36313d619ba";
+    $token = "eb9981d83cd8febf9f999dacd9f49dcb";
     $client = new \Twilio\Rest\Client($sid,$token);
 
     $message = $client->messages->create(

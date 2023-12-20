@@ -10,12 +10,13 @@ const join_sign_in_div = document.querySelector('.join_sign_in_div');
 const icon_image_div = document.querySelector('.icon_image');
 const profile_img = icon_image_div.querySelector('img');
 const profile_menu = document.querySelector('.profile_menu');
+const logout_btn = document.querySelector('.logout_btn');
 
 const profile_btn = document.querySelector('.profile_btn');
 
-const demo_url = 'php/demo.php';
+const logout_url = 'php/logout.php';
 
-const check_session = () => {
+const user_logout = () => {
     fetch(demo_url, {
         method: 'GET',
         headers: {
@@ -26,18 +27,12 @@ const check_session = () => {
         .then(json => {
             console.log(json);
             if (json.status_code == 200) {
-                join_sign_in_div.style.display = "none";
-                icon_image_div.style.display = "block";
-            }
-            else if (json.status_code == 400) {
                 join_sign_in_div.style.display = "block";
                 icon_image_div.style.display = "none";
-                window.location.href = "signin.php";
+                window.location.href = 'signin.php';
             }
         })
 }
-
-check_session();
 
 const toggleProfileMenu = () => {
     if (profile_menu.style.display === 'block') {
@@ -51,7 +46,7 @@ const toggleProfileMenu = () => {
     }
 }
 
-icon_image_div.addEventListener('click',toggleProfileMenu);
+icon_image_div.addEventListener('click', toggleProfileMenu);
 
 profile_btn.addEventListener('click', () => {
     window.location.href = 'profile.php';
@@ -111,4 +106,8 @@ fa_bars.addEventListener('click', func_for_click_on_bars);
 
 nav_ul_i.addEventListener('click', () => {
     nav_ul.style.left = '-250px';
+})
+
+logout_btn.addEventListener('click', () => {
+    user_logout();
 })
