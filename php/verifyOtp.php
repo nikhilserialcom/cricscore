@@ -7,12 +7,13 @@ header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("content-type: application/json");
 
 $userCollection = $database->Users;
+
 session_start();
 
 $data = json_decode(file_get_contents('php://input'),true);
 
-$mobile = $data['mobileNo'];
-$otp  = $data['userOtp'];
+$mobile = isset($data['mobileNo']) ? $data['mobileNo'] : '';
+$otp  = isset($data['userOtp']) ? $data['userOtp'] : '';
 
 // $response = array(
 //     'mobileNumber' => $mobile,
@@ -27,7 +28,7 @@ $check_number = $userCollection->findOne($mobileFilter);
 if ($check_number) {
     if($check_number['otp'] == $otp)
     {
-        $_SESSION['userId'] = $check_number['userId'];
+        $_SESSION['userId'] = $check_number['_id'];
         $updateData = [
             '$set' => ['verifyStatus' => "1"]
         ];
@@ -35,8 +36,8 @@ if ($check_number) {
         $updateOtpQuery = $userCollection->updateOne($mobileFilter,$updateData);
         $response = [
             'status_code' => "200",
-            'userid' => $check_number['userId'],
-            'message' => 'your otp is valid'
+            'userid' => $_SESSION['userId'],
+            'message' => 'Login Succesfully'
         ];
     }
     else {

@@ -10,9 +10,10 @@ session_start();
 
 if(isset($_SESSION['userId']))
 {
+    $userId = $_SESSION['userId'];
     $response = [
         'status_code' => "200",
-        'message' => $_SESSION['userId']
+        'message' => $userId->__tostring()
     ];
 }
 else

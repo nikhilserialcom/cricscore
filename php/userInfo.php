@@ -1,5 +1,5 @@
 <?php
-session_start();
+
 require 'partials/mongodbconnect.php';
 
 header("Access-Control-Allow-Origin: *");
@@ -9,64 +9,60 @@ header("content-type: application/json");
 
 $userCollection = $database->Users;
 
-$data = json_decode(file_get_contents('php://input'),true);
+session_start();
 
-$state = $data['statename'];
-$city = $data['cityName'];
-$name = $data['name'];
-$email = $data['email'];
-// $userId = $data['userId'];
-$userId = $_SESSION['userId'];
+$data = json_decode(file_get_contents('php://input'), true);
 
-
-// $response = array(
-//     'state' => $state,
-//     'cityName' => $city,
-//     'userName' => $name,
-//     'userEmail' => $email,
-//     'userId' => $userId
-// );
-
-// echo json_encode($response,JSON_PRETTY_PRINT);
-
-$userFilter = ['userId' => $userId];
-$check_user = $userCollection->findOne($userFilter);
-
-if($check_user) {
-   $updateData = [
-    '$set' => [
-            'stateName' => $state,
-            'cityName' => $city,
-            'userName' => $name,
-            'userEmail' => $email
-        ]
-    ];
-
-   $updateuserInfo = $userCollection->updateOne($userFilter,$updateData);
-   if($updateData)
-   {
-        $response = [
-            'status_code' => "200",
-            'message' => 'Login Succesfully'
-        ];
-   }
-   else
-   {
-        $response = [
-            'status_code' => "400",
-            'message' => 'sonthing went to worng'
-        ];
-   }
-
-}
-else
-{
+if (!isset($_SESSION['userId'])) {
     $response = [
-        'status_code' => "404",
-        'message' => 'user not found'
+        'status_code' => 400,
+        'email' => 'your session is expire'
     ];
+} else {
+    $state = isset($data['statename']) ? $data['statename'] : '';
+    $city = isset($data['cityName']) ? $data['cityName'] : '';
+    $name = isset($data['name']) ? $data['name'] : '';
+    $email = isset($data['email']) ? $data['email'] : '';
+    // $response = array(
+    //     'state' => $state,
+    //     'cityName' => $city,
+    //     'userName' => $name,
+    //     'userEmail' => $email
+    // );
+    $userId = isset($_SESSION['userId']) ? $_SESSION['userId'] : '';
 
+    $userFilter = ['userId' => $userId];
+    $check_user = $userCollection->findOne($userFilter);
+
+    if ($check_user) {
+        $updateData = [
+            '$set' => [
+                'stateName' => $state,
+                'cityName' => $city,
+                'userName' => $name,
+                'userEmail' => $email
+            ]
+        ];
+
+        $updateuserInfo = $userCollection->updateOne($userFilter, $updateData);
+        if ($updateData) {
+            $response = [
+                'status_code' => "200",
+                'message' => 'Login Succesfully'
+            ];
+        } else {
+            $response = [
+                'status_code' => "400",
+                'message' => 'sonthing went to worng'
+            ];
+        }
+    } else {
+        $response = [
+            'status_code' => "404",
+            'message' => 'user not found'
+        ];
+    }
 }
 
-echo json_encode($response,JSON_PRETTY_PRINT);
-?>
+
+echo json_encode($response, JSON_PRETTY_PRINT);
