@@ -10,7 +10,7 @@ header("content-type: application/json");
 $matchCollection = $database->matchs;
 $playCollection = $database->players;
 
-$data = json_decode(file_get_contents('php://input'),true);
+$data = json_decode(file_get_contents('php://input'), true);
 
 $matchId = $data['matchId'];
 $teamId = $data['teamId'];
@@ -48,63 +48,50 @@ $addplayer = [
 $matchFilter = ['_id' => new MongoDB\BSON\ObjectId($matchId)];
 $checkMatch = $matchCollection->findOne($matchFilter);
 
-if($checkMatch)
-{
-    if($checkMatch['team1_id'] == $teamId)
-    {
+if ($checkMatch) {
+    if ($checkMatch['team1_id'] == $teamId) {
         $update = [
             '$push' => [
                 'team_1' => $addplayer,
             ]
         ];
-    
-        $updatePlayer = $matchCollection->updateOne($matchFilter,$update);
-        if($updatePlayer->getModifiedCount() > 0)
-        {
+
+        $updatePlayer = $matchCollection->updateOne($matchFilter, $update);
+        if ($updatePlayer->getModifiedCount() > 0) {
             $response = array(
                 'status_code' => '200',
                 'match' => 'add player successfully'
             );
-        }
-        else
-        {
+        } else {
             $response = array(
                 'status_code' => '422',
                 'match' => 'network error'
             );
-        }    
-    }
-    elseif($checkMatch['team2_id'] == $teamId)
-    {
+        }
+    } elseif ($checkMatch['team2_id'] == $teamId) {
         $update = [
             '$push' => [
                 'team_2' => $addplayer,
             ]
         ];
-    
-        $updatePlayer = $matchCollection->updateOne($matchFilter,$update);
-        if($updatePlayer->getModifiedCount() > 0)
-        {
+
+        $updatePlayer = $matchCollection->updateOne($matchFilter, $update);
+        if ($updatePlayer->getModifiedCount() > 0) {
             $response = array(
                 'status_code' => '200',
                 'match' => 'add player successfully'
             );
-        }
-        else
-        {
+        } else {
             $response = array(
                 'status_code' => '422',
                 'match' => 'network error'
             );
         }
-    }   
-}
-else
-{
+    }
+} else {
     $response = array(
         'status_code' => '400'
     );
 }
 
 echo json_encode($response);
-?>

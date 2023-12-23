@@ -11,12 +11,12 @@ header("content-type: application/json");
 
 $userCollection = $database->Users;
 
-function sendOtp($no,$otp)
+function sendOtp($no, $otp)
 {
-   
+
     $sid = "AC2014df18a9e354053a153ad15e381ff8";
-    $token = "eb9981d83cd8febf9f999dacd9f49dcb";
-    $client = new \Twilio\Rest\Client($sid,$token);
+    $token = "477d7ea4314b351353b08c2347081b38";
+    $client = new \Twilio\Rest\Client($sid, $token);
 
     $message = $client->messages->create(
         $no,
@@ -24,24 +24,20 @@ function sendOtp($no,$otp)
             'from' => '+12056971459',
             'body' => "your otp is : " . $otp
         ]
-    ); 
-    
-    if($message)
-    {
+    );
+
+    if ($message) {
         return true;
-    }
-    else
-    {
+    } else {
         return false;
     }
-    
 }
 
-$data = json_decode(file_get_contents('php://input'),true);
+$data = json_decode(file_get_contents('php://input'), true);
 
 $country = $data['country'];
 $mobileNumber = $data['mobileNumber'];
-$otp = rand(1111,9999);
+$otp = rand(1111, 9999);
 // $response = array(
 //     'countryName' => $country,
 //     'mobileNumber' => $mobileNumber,
@@ -52,43 +48,43 @@ $otp = rand(1111,9999);
 $mobileFilter = ['mobileNumber' => $mobileNumber];
 $check_mobileNumber = $userCollection->findOne($mobileFilter);
 
-if($check_mobileNumber) {
-    
-    $updateOtp = sendOtp($mobileNumber,$otp);
-    if($updateOtp == "true")
-    {
-        $updateData = [
-            '$set' => ['otp' => $otp,'verifyStatus' => "0"]
-        ];
-        $updateOtpQuery = $userCollection->updateOne($mobileFilter,$updateData);
-        if($updateOtpQuery)
-        {
+if ($check_mobileNumber) {
+
+    $updateOtp = sendOtp($mobileNumber, $otp);
+    if ($updateOtp == "true") {
+        if ($check_mobileNumber['verifyStatus'] == "0") {
+            $updateData = [
+                '$set' => ['otp' => $otp]
+            ];
+            $situation = "pending";
+        } else {
+            $updateData = [
+                '$set' => ['otp' => $otp, 'verifyStatus' => "0"]
+            ];
+            $situation = "update";
+        }
+        $updateOtpQuery = $userCollection->updateOne($mobileFilter, $updateData);
+        if ($updateOtpQuery) {
             $response = [
                 'status_code' => '200',
-                'situation' => 'update',
+                'situation' => $situation,
                 'message' => 'otp has been send in your mobile number',
             ];
-        } 
-        
-    }
-    else
-    {
+        }
+    } else {
         $response = [
             'status_code' => '422',
             'message' => 'otp has not been send in your mobile number',
         ];
     }
-}
-else {
-    $insertOtp = sendOtp($mobileNumber,$otp);
-    if($insertOtp == "true")
-    {
-        $userId = uniqid();
+} else {
+    $insertOtp = sendOtp($mobileNumber, $otp);
+    if ($insertOtp == "true") {
         $documents = [
-            'userId' => $userId,
             'country_name' => $country,
             'mobileNumber' => $mobileNumber,
-            'otp' => $otp, 
+            'otp' => $otp,
+            'verifyStatus' => "0"
         ];
 
         $insertuserInfo = $userCollection->insertOne($documents);
@@ -100,15 +96,11 @@ else {
                 'message' => 'otp has been send in your mobile number',
             ];
         }
-    }
-    else
-    {
+    } else {
         $response = [
             'status_code' => '422',
             'message' => 'otp has not been send in your mobile number',
         ];
-    } 
-    
+    }
 }
 echo json_encode($response, JSON_PRETTY_PRINT);
-?>

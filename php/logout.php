@@ -11,7 +11,6 @@ session_start();
 if(isset($_SESSION['userId']))
 {
     session_destroy();
-    // session_unset($_SESSION['userId']);
     $response = [
         'status_code' => "200",
         'message' => 'Logout successful! '

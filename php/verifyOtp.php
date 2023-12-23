@@ -1,4 +1,4 @@
-<?php 
+<?php
 require 'partials/mongodbconnect.php';
 
 header("Access-Control-Allow-Origin: *");
@@ -10,7 +10,7 @@ $userCollection = $database->Users;
 
 session_start();
 
-$data = json_decode(file_get_contents('php://input'),true);
+$data = json_decode(file_get_contents('php://input'), true);
 
 $mobile = isset($data['mobileNo']) ? $data['mobileNo'] : '';
 $otp  = isset($data['userOtp']) ? $data['userOtp'] : '';
@@ -26,35 +26,29 @@ $mobileFilter = ['mobileNumber' => $mobile, 'verifyStatus' => "0"];
 $check_number = $userCollection->findOne($mobileFilter);
 
 if ($check_number) {
-    if($check_number['otp'] == $otp)
-    {
+    if ($check_number['otp'] == $otp) {
         $_SESSION['userId'] = $check_number['_id'];
         $updateData = [
             '$set' => ['verifyStatus' => "1"]
         ];
 
-        $updateOtpQuery = $userCollection->updateOne($mobileFilter,$updateData);
+        $updateOtpQuery = $userCollection->updateOne($mobileFilter, $updateData);
         $response = [
             'status_code' => "200",
             'userid' => $_SESSION['userId'],
             'message' => 'Login Succesfully'
         ];
-    }
-    else {
+    } else {
         $response = [
             'status_code' => "400",
             'message' => 'your otp is not valid'
         ];
     }
-}
-else
-{
+} else {
     $response = [
         'status_code' => '404',
         'message' => 'No result found',
     ];
-
 }
 
-echo json_encode($response,JSON_PRETTY_PRINT);
-?>
+echo json_encode($response, JSON_PRETTY_PRINT);
