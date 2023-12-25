@@ -31,14 +31,14 @@ if (!isset($_SESSION['userId'])) {
         if ($teamA) {
             $document = [
                 '$set' => [
-                    'teamA' => $teamA,
+                    'team_A' => $teamA,
                 ]
             ];
         }
         if ($teamB) {
             $document = [
                 '$set' => [
-                    'teamB' => $teamB,
+                    'team_B' => $teamB,
                 ]
             ];
         }

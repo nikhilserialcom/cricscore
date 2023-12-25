@@ -16,7 +16,7 @@ if (isset($_SESSION['userId'])) {
         'message' => 'your session is expire'
     ];
 } else {
-    $profile = isset($_FILES['playerProfile']) ? $_FILES['playerProfile'] : '';
+    $profile = isset($_FILES['playerProfile']) ? $_FILES['playerProfile'] : null;
     $playerName = isset($_POST['playerName']) ? $_POST['playerName'] : '';
     $mobileNumber = isset($_POST['mobileNumber']) ? $_POST['mobileNumber'] : '';
     $playerEmail = isset($_POST['playerEmail']) ?  $_POST['playerEmail'] : '';
@@ -32,7 +32,7 @@ if (isset($_SESSION['userId'])) {
     }
 
     $document = [
-        'playerProfile' => $profilePath,
+        'playerProfile' => isset($profilePath) ? $profilePath : '',
         'playerName' => $playerName,
         'mobileNumber' => $mobileNumber,
         'playerEmail' => $playerEmail,

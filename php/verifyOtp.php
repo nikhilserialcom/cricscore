@@ -6,8 +6,6 @@ header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("content-type: application/json");
 
-$userCollection = $database->Users;
-
 session_start();
 
 $data = json_decode(file_get_contents('php://input'), true);

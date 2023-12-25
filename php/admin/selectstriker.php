@@ -8,42 +8,35 @@ header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("content-type: application/json");
 
 $matchCollection = $database->matchs;
-$playCollection = $database->players;
 
 $data = json_decode(file_get_contents('php://input'), true);
 
-$matchId = $data['matchId'];
+$matchId = $data['match_id'];
 $teamId = $data['teamId'];
-$playerId = $data['playerId'];
+$newbatsamanId = $data['newbatsmanId'];
 
 // $response = array(
 //     'match_id' => $matchId,
 //     'teamId' => $teamId,
-//     'new_batsman_id' => $playerId,
+//     'new_batsman_id' => $newbatsamanId,
 // );
 
-$filterPlayer = ['_id' => new MongoDB\BSON\ObjectId($playerId)];
-$checkplayer = $playCollection->findOne($filterPlayer);
-
-$addplayer = [
-    '_id' => $playerId,
-    'playerName' => $checkplayer['playerName'],
-    'bat_4' => "0",
-    'bat_6' => "0",
-    'bat_liveRun' => "0",
-    'bat_ball' => "0",
-    'bat_strike_rate' => "0",
-    'ball_over' => "0",
-    'ball_maiden' => "0",
-    'ball_wicket' => "0",
-    'ball_liveRun' => "0",
-    'ball_no_bowl' => "0",
-    'ball_wides_bowled' => "0",
-    'ball_economy' => "0",
-    'run_saved' => "0",
-    'run_missed' => "0",
-    "player_role" => "0"
-];
+// $addplayer = [
+//     '_id' => $newbatsamanId,
+//     'playerName' => $checkplayer['playerName'],
+//     'bat_4' => "0",
+//     'bat_6' => "0",
+//     'bat_liveRun' => "0",
+//     'bat_ball' => "0",
+//     'bat_strike_rate' => "0",
+//     'ball_over' => "0",
+//     'ball_maiden' => "0",
+//     'ball_wicket' => "0",
+//     'ball_liveRun' => "0",
+//     'ball_no_bowl' => "0",
+//     'ball_wides_bowled' => "0",
+//     'ball_economy' => "0"
+// ];
 
 $matchFilter = ['_id' => new MongoDB\BSON\ObjectId($matchId)];
 $checkMatch = $matchCollection->findOne($matchFilter);
@@ -51,8 +44,8 @@ $checkMatch = $matchCollection->findOne($matchFilter);
 if ($checkMatch) {
     if ($checkMatch['team1_id'] == $teamId) {
         $update = [
-            '$push' => [
-                'team_1' => $addplayer,
+            '$set' => [
+                'striker' => $newbatsamanId,
             ]
         ];
 
@@ -70,8 +63,8 @@ if ($checkMatch) {
         }
     } elseif ($checkMatch['team2_id'] == $teamId) {
         $update = [
-            '$push' => [
-                'team_2' => $addplayer,
+            '$set' => [
+                'striker' => $newbatsamanId,
             ]
         ];
 
