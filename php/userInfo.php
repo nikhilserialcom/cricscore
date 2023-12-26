@@ -1,4 +1,5 @@
 <?php
+session_start();
 
 require 'partials/mongodbconnect.php';
 
@@ -7,7 +8,6 @@ header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("content-type: application/json");
 
-session_start();
 
 $data = json_decode(file_get_contents('php://input'), true);
 
@@ -17,9 +17,9 @@ $state = isset($data['stateName']) ? $data['stateName'] : '';
 $city = isset($data['cityName']) ? $data['cityName'] : '';
 $name = isset($data['name']) ? $data['name'] : '';
 $email = isset($data['email']) ? $data['email'] : '';
-// $response = array(
-//     'userId' => $userId
 
+// $response = array(
+//     'userId' => $_SESSION['userId']
 // );
 
 

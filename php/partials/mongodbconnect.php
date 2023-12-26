@@ -6,7 +6,7 @@ $con = new MongoDB\Client('mongodb://localhost:27017');
 
 $database = $con->crick_heros;
 $countryNameCollection = $database->country_name_code;
-// $cityNameCollection = $database->city_name;
+$cityNameCollection = $database->city_name; 
 $userCollection = $database->Users;
 $teamCollection = $database->teams;
 $stateCollection = $database->states_name;

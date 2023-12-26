@@ -1,31 +1,27 @@
 <?php
 session_start();
-
 require 'partials/mongodbconnect.php';
 
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-header("Access-Control-Allow-Headers: *");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("content-type: application/json");
 
 
 if (!isset($_SESSION['userId'])) {
     $response = [
-        'status_code' => 400,
-        'message' => 'your session is expire'
+        'status_code' => 400, 
+        'email' => 'your session is expire'
     ];
 } else {
-    $userId = isset($_SESSION['userId']) ? $_SESSION['userId'] : '';
+    $all_matchs = $matchCollection->find();
 
-    $matchFilter = ['userId' => $userId->__tostring()];
-    $checkMatch = $matchCollection->find($matchFilter);
+    $matchs = iterator_to_array($all_matchs);
 
-    $matches = iterator_to_array($checkMatch);
-
-    if ($matches) {
+    if ($matchs) {
         $response = [
             'status_code' => 200,
-            'matchs' => $matches
+            'matchs' => $matchs
         ];
     } else {
         $response = [
@@ -35,4 +31,4 @@ if (!isset($_SESSION['userId'])) {
     }
 }
 
-echo json_encode($response, JSON_PRETTY_PRINT);
+echo json_encode($response,JSON_PRETTY_PRINT);
