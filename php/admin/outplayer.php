@@ -40,21 +40,16 @@ if ($checkMatch) {
                 $batsman['bat_status'] = 'out';
             }
         }
-        foreach($checkMatch['team_2'] as &$bowler)
-        {
-            if($bowler['_id'] == $bowlerId)
-            {
+        foreach ($checkMatch['team_2'] as &$bowler) {
+            if ($bowler['_id'] == $bowlerId) {
                 $bowler['ball_wicket'] += 1;
                 $team1Wicket = $oldteam1wicket + 1;
-                if($bowler['ball_over']  * 10 % 10 < 5)
-                {
+                if ($bowler['ball_over']  * 10 % 10 < 5) {
                     $bowler['ball_over'] = round($bowler['ball_over'] + 0.1, 1);
-                    $totalTeam1over = round($oldover + 0.1,1);
-                }
-                else
-                {
+                    $totalTeam1over = round($oldover + 0.1, 1);
+                } else {
                     $bowler['ball_over'] =  round($bowler['ball_over'] + 0.5, 1);
-                    $totalTeam1over = round($oldover + 0.5,1);
+                    $totalTeam1over = round($oldover + 0.5, 1);
                     $striker = $checkMatch['non_striker'];
                     $non_striker = $batsmanId;
                 }
@@ -96,7 +91,6 @@ if ($checkMatch) {
         $document = [
             '$set' => [
                 'team_2' => $checkMatch['team_2'],
-
             ]
         ];
 
