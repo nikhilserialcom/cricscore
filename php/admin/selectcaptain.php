@@ -11,13 +11,13 @@ header("content-type: application/json");
 
 $data = json_decode(file_get_contents('php://input'), true);
 
-$matchId = isset($data['matchId']) ? $data['matchId'] : '';
+$matchId = isset($data['matchId']) ? new MongoDB\BSON\ObjectId($data['matchId']) : '';
 $teamId = isset($data['teamId']) ? $data['teamId'] : '';
 $playerId = isset($data['playerId']) ? $data['playerId'] : '';
 $playerRole = isset($data['role']) ? $data['role'] : '';
 
 $playerFilter = [
-    '_id' => new MongoDB\BSON\ObjectId($matchId),
+    '_id' => $matchId,
 ];
 
 $check_player = $matchCollection->findOne($playerFilter);
@@ -36,18 +36,30 @@ if ($check_player) {
             }
         }
         $document = [
-            '$push' => [
+            '$set' => [
                 'team_1' => $check_player['team_1']
             ]
         ];
-    } else {
-        $response = [
-            'status_code' => '400',
-            'message' => 'team are not present'
+    } 
+
+    if($check_player['team2_id'] == $teamId)
+    {
+        foreach ($check_player['team_2'] as $player) {
+            if($player['_id'] == $playerId){
+                $player['player_role'] = $playerRole;
+            }else {
+                $response = [
+                    'status_code' => '404',
+                    'message' => 'player are not present'
+                ];
+            }
+        }
+        $document = [
+            '$set' => [
+                'team_2' => $check_player['team_2'],
+            ]
         ];
     }
-
-
 
     $updateRole = $matchCollection->updateOne(
         ['_id' => new MongoDB\BSON\ObjectId($matchId)],
@@ -72,4 +84,4 @@ if ($check_player) {
     ];
 }
 
-echo json_encode($response);
+echo json_encode($response,JSON_PRETTY_PRINT);

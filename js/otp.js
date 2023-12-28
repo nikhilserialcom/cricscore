@@ -140,10 +140,10 @@ const verifyOTP = (mobile_number,otp) => {
             {
                 if(localStorage.getItem('situation') == "update")
                 {
-                    window.location.href = "dashborad.php";
+                    // window.location.href = "dashborad.php";
                 }
                 else{
-                    window.location.href = 'signin_select_city.php';  
+                    // window.location.href = 'signin_select_city.php';  
                 }
             }
             else {
