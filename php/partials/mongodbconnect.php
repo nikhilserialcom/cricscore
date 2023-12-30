@@ -15,6 +15,18 @@ $matchCollection = $database->matchs;
 $teamCollection = $database->teams;
 $playerCollection = $database->players;
 
+$allowedOrigins = [
+    'https://cricscorers-15aec.web.app',
+    'http://localhost:5173/',
+    'http://localhost:5174/',
+];
+
+$origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
+
+if (in_array($origin, $allowedOrigins)) {
+    header('Access-Control-Allow-Origin: ' . $origin);
+}
+
 // if ($countryNameCollection) {
 //     echo 'mongodb connetion is successfully done!';
 // }

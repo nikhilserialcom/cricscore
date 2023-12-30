@@ -1,10 +1,16 @@
 <?php
+ session_set_cookie_params([
+    'lifetime' => 3600, 
+    'path' => '/',  
+    'httponly' => true,
+    'secure' => true,
+    'samesite' => 'None']);
 session_start();
 require 'partials/mongodbconnect.php';
 
-header("Access-Control-Allow-Origin: *");
+header('Access-Control-Allow-Credentials: true');
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
+header("Access-Control-Allow-Headers:  X-Requested-With, Origin, Content-Type, X-CSRF-Token, Accept");
 header("content-type: application/json");
 
 $data = json_decode(file_get_contents('php://input'), true);
@@ -25,6 +31,7 @@ $check_number = $userCollection->findOne($mobileFilter);
 if ($check_number) {
     if ($check_number['otp'] == $otp) {
         $_SESSION['userId'] = $check_number['_id'];
+       
         $updateData = [
             '$set' => ['verifyStatus' => "1"]
         ];
