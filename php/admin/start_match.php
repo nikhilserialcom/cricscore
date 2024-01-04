@@ -1,66 +1,58 @@
-    <?php
+<?php
 
-    require '../partials/mongodbconnect.php';
+session_start();
 
-    header("Access-Control-Allow-Origin: *");
-    header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-    header("Access-Control-Allow-Headers: Content-Type, Authorization");
-    header("content-type: application/json");
+require '../partials/mongodbconnect.php';
 
-    $data = json_decode(file_get_contents('php://input'), true);
+header('Access-Control-Allow-Credentials: true');
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+header("Access-Control-Allow-Headers:  X-Requested-With, Origin, Content-Type, X-CSRF-Token, Accept");
+header("content-type: application/json");
 
+$data = json_decode(file_get_contents('php://input'), true);
+
+if(!isset($_SESSION['userId']))
+{
+    $response = [
+        'status_code' => 404,
+        'message' => 'your session is expire'
+    ];
+}
+else{
     $matchId = isset($data['matchId']) ? new MongoDB\BSON\ObjectId($data['matchId']) : '';
-    $matchType = isset($data['matchType']) ? $data['matchType'] : '';
-    $total_over = isset($data['total_over']) ? $data['total_over'] : '';
-    $city = isset($data['city']) ? $data['city'] : '';
-    $ground = isset($data['ground']) ? $data['ground'] : '';
-    $date_time = isset($data['dateTime']) ? $data['dateTime'] : '';
-    $ballType = isset($data['ballType']) ? $data['ballType'] : '';
-    $pitch_type = isset($data['pitch_type']) ? $data['pitch_type'] : '';
-    $umpires = isset($data['umpires']) ? $data['umpires'] : '';
-    $scorer = isset($data['scorer']) ? $data['scorer'] : '';
-    $commemtator = isset($data['commentator']) ? $data['commentator'] : '';
-
-
+    $toss = isset($data['team_id']) ? $data['team_id'] : '';
+    $elected = isset($data['elected']) ? $data['elected'] : '';
+    
     $match_fillter = ['_id' => $matchId];
     $matches = $matchCollection->findOne($match_fillter);
-
+    
     if ($matches) {
         $document = [
             '$set' => [
-                'match_type' => $matchType,
-                'total_over' => $total_over,
-                'city' => $city,
-                'ground' => $ground,
-                'dateTime' => $date_time,
-                'ballType' => $ballType,
-                'pitch_type' => $pitch_type,
-                'umpires' => $umpires,
-                'scorer' => $scorer,
-                'commentator' => $commemtator,
+               'toss' => $toss,
+               'elected' => $elected
             ]
         ];
-
-        $update_match = $matchCollection->updateOne(['_id' => $matchId],$document);
-        if($update_match->getModifiedCount() > 0)
-        {
+    
+        $update_match = $matchCollection->updateOne(['_id' => $matchId], $document);
+        if ($update_match->getModifiedCount() > 0) {
             $response = [
                 'status_code' => '200',
                 'message' => $matches
             ];
-        }
-        else{
+        } else {
             $response = [
                 'status_code' => '400',
                 'message' => 'match update failed'
             ];
         }
-
     } else {
         $response = [
             'status_code' => '404',
             'message' => 'database empty'
         ];
     }
+}
 
-    echo json_encode($response, JSON_PRETTY_PRINT);
+
+echo json_encode($response, JSON_PRETTY_PRINT);

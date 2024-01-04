@@ -13,7 +13,7 @@ session_start();
 
 $data = json_decode(file_get_contents('php://input'), true);
 
-$matchId = isset($data['matchId']) ? $data['matchId'] : '';
+$matchId = isset($data['matchId']) ? new ObjectId($data['matchId']) : '';
 $teamId = isset($data['teamId']) ?  $data['teamId'] : '';
 $playerId = isset($data['playerId']) ? $data['playerId'] : '';
 
@@ -23,7 +23,7 @@ foreach ($playerId as $id) {
     $filterPlayer = ['_id' => new ObjectId($id)];
     $checkplayer = $playerCollection->findOne($filterPlayer);
     $addplayer = [
-        '_id' => $id,
+        '_id' =>$id,
         'playerName' => $checkplayer['playerName'],
         'bat_4' => "0",
         'bat_6' => "0",
@@ -51,7 +51,7 @@ foreach ($playerId as $id) {
 //     'new_batsman_id' => $finalId,
 // );
 
-$matchFilter = ['_id' => new ObjectId($matchId)];
+$matchFilter = ['_id' => $matchId];
 $checkMatch = $matchCollection->findOne($matchFilter);
 
 if ($checkMatch) {
