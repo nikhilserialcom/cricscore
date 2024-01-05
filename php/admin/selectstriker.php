@@ -13,7 +13,6 @@ $data = json_decode(file_get_contents('php://input'), true);
 
 $matchId = isset($data['match_id']) ? new MongoDB\BSON\ObjectId($data['match_id']) : '';
 $teamId = isset($data['teamId']) ? $data['teamId'] : '';
-$
 $newbatsamanId = isset($data['newbatsmanId']) ? $data['newbatsmanId'] : '';
 
 // $response = array(

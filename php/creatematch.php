@@ -99,7 +99,7 @@ if (!isset($_SESSION['userId'])) {
         'gruound_name' => $groundName,
         'match_date' => $matchDate,
         'ball_type' => $ballType,
-        '$patch_type' => $patchType,
+        'patch_type' => $patchType,
         'teamA' =>  $finalTeamA,
         'teamB' =>  $finalTeamB,
         'umpires' => $umpires,
