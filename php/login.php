@@ -3,19 +3,13 @@
 require 'partials/mongodbconnect.php';
 require 'twillio/vendor/autoload.php';
 
-header('Access-Control-Allow-Credentials: true');
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-header("Access-Control-Allow-Headers:  X-Requested-With, Origin, Content-Type, X-CSRF-Token, Accept");
-header("content-type: application/json");
-
-
 $userCollection = $database->Users;
 
 function sendOtp($no, $otp)
 {
 
     $sid = "AC2014df18a9e354053a153ad15e381ff8";
-    $token = "8a43f60f838b3f64a27118c256159af0";
+    $token = "46a36c1aec1131c58532ebfaed55ecc9";
     $client = new \Twilio\Rest\Client($sid, $token);
 
     $message = $client->messages->create(
