@@ -4,12 +4,11 @@ session_start();
 require 'partials/mongodbconnect.php';
 
 use MongoDB\BSON\ObjectId;
-
-header('Access-Control-Allow-Credentials: true');
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-header("Access-Control-Allow-Headers:  X-Requested-With, Origin, Content-Type, X-CSRF-Token, Accept");
-header("content-type: application/json");
-
+// header('Access-Control-Allow-Credentials: true');
+// header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+// header("Access-Control-Allow-Headers:  X-Requested-With, Origin, Content-Type, X-CSRF-Token, Accept");
+// header("content-type: application/json");
+// header("ngrok-skip-browser-warning: 1");
 
 if (!isset($_SESSION['userId'])) {
     $response = [

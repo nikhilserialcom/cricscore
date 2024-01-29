@@ -3,13 +3,19 @@
 require 'partials/mongodbconnect.php';
 require 'twillio/vendor/autoload.php';
 
+header('Access-Control-Allow-Credentials: true');
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+header("Access-Control-Allow-Headers:  X-Requested-With, Origin, Content-Type, X-CSRF-Token, Accept");
+header("content-type: application/json");
+header("ngrok-skip-browser-warning: 1");
+
 $userCollection = $database->Users;
 
 function sendOtp($no, $otp)
 {
 
     $sid = "AC2014df18a9e354053a153ad15e381ff8";
-    $token = "46a36c1aec1131c58532ebfaed55ecc9";
+    $token = "63d9739d5d347456f4cf679ac960b548";
     $client = new \Twilio\Rest\Client($sid, $token);
 
     $message = $client->messages->create(
@@ -31,7 +37,8 @@ $data = json_decode(file_get_contents('php://input'), true);
 
 $country = $data['country'];
 $mobileNumber = $data['mobileNumber'];
-$otp = rand(1111, 9999);
+// $otp = rand(1111, 9999);
+$otp = 1234;
 // $response = array(
 //     'countryName' => $country,
 //     'mobileNumber' => $mobileNumber,
@@ -44,7 +51,8 @@ $check_mobileNumber = $userCollection->findOne($mobileFilter);
 
 if ($check_mobileNumber) {
 
-    $updateOtp = sendOtp($mobileNumber, $otp);
+    // $updateOtp = sendOtp($mobileNumber, $otp);
+    $updateOtp = "true";
     if ($updateOtp == "true") {
         if ($check_mobileNumber['verifyStatus'] == "0") {
             $updateData = [
@@ -72,7 +80,8 @@ if ($check_mobileNumber) {
         ];
     }
 } else {
-    $insertOtp = sendOtp($mobileNumber, $otp);
+    // $insertOtp = sendOtp($mobileNumber, $otp);
+    $insertOtp = "true";
     if ($insertOtp == "true") {
         $documents = [
             'country_name' => $country,

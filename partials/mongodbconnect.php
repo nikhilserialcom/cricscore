@@ -27,11 +27,11 @@ if (in_array($origin, $allowedOrigins)) {
     header('Access-Control-Allow-Origin: ' . $origin);
 }
 
-header('Access-Control-Allow-Credentials: true');
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-header("Access-Control-Allow-Headers:  X-Requested-With, Origin, Content-Type, X-CSRF-Token, Accept");
-header("content-type: application/json");
-header('ngrok-skip-browser-warning: 69420');
+// header('Access-Control-Allow-Credentials: true');
+// header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+// header("Access-Control-Allow-Headers:  X-Requested-With, Origin, Content-Type, X-CSRF-Token, Accept");
+// header("content-type: application/json");
+// header("ngrok-skip-browser-warning: 1");
 
 // if ($countryNameCollection) {
 //     echo 'mongodb connetion is successfully done!';
