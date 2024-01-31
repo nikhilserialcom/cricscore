@@ -1,7 +1,6 @@
-<?php
+<?php 
 session_start();
-
-require '../partials/mongodbconnect.php';
+require 'partials/mongodbconnect.php';
 $allowedOrigins = [
     'https://cricscorers-15aec.web.app',
     'http://localhost:5173',
@@ -14,7 +13,7 @@ $origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
 if (in_array($origin, $allowedOrigins)) {
     header('Access-Control-Allow-Origin: ' . $origin);
 }
-// header('Access-Control-Allow-Origin: https://cricscorers-15aec.web.app');
+
 header('Access-Control-Allow-Credentials: true');
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers:  X-Requested-With, Origin, Content-Type, X-CSRF-Token, Accept");
@@ -22,34 +21,16 @@ header("content-type: application/json");
 header("ngrok-skip-browser-warning: 1");
 
 
-if(!isset($_SESSION['userId']))
+if(isset($_SESSION['userId']))
 {
     $response = [
-        'status_code' => 400,
-        'message' => 'your session is expire'
+        'status_code' => "200",
     ];
 }
 else{
-    $teamData = $teamCollection->find([]);
-    
-    $team_arr = iterator_to_array($teamData);
-    
-    if(!empty($team_arr))
-    {
-        $response = array(
-            'status_code' => '200',
-            'arr' => $team_arr
-        );
-    }
-    else
-    {
-        $response = array(
-            'status_code' => '404',
-            'message' => 'database empty'
-        );
-    }
+    $response = [
+        'status_code' => "400",
+    ];
 }
-
-
-echo json_encode($response);
+echo json_encode($response,JSON_PRETTY_PRINT);
 ?>

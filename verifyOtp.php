@@ -1,5 +1,5 @@
 <?php
- session_set_cookie_params([
+session_set_cookie_params([
     'lifetime' => 3600, 
     'path' => '/', 
     'secure' => true, 
@@ -7,6 +7,18 @@
     'samesite' => 'None']);
 session_start();
 require 'partials/mongodbconnect.php';
+$allowedOrigins = [
+    'https://cricscorers-15aec.web.app',
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'http://192.168.1.15:5173',
+];
+
+$origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
+
+if (in_array($origin, $allowedOrigins)) {
+    header('Access-Control-Allow-Origin: ' . $origin);
+}
 
 header('Access-Control-Allow-Credentials: true');
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
@@ -32,6 +44,11 @@ $check_number = $userCollection->findOne($mobileFilter);
 if ($check_number) {
     if ($check_number['otp'] == $otp) {
         $_SESSION['userId'] = $check_number['_id'];
+        if(!empty($check_number['userEmail'])){
+            $situation = "update";
+        }else{
+            $situation = "pending";
+        }
        
         $updateData = [
             '$set' => ['verifyStatus' => "1"]
@@ -41,6 +58,7 @@ if ($check_number) {
         $response = [
             'status_code' => "200",
             'userid' => $_SESSION['userId'],
+            'situation' => $situation,
             'message' => 'Login Succesfully'
         ];
     } else {

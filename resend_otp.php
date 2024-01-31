@@ -27,7 +27,7 @@ function sendOtp($no, $otp)
 {
 
     $sid = "AC2014df18a9e354053a153ad15e381ff8";
-    $token = "63d9739d5d347456f4cf679ac960b548";
+    $token = "8a0ac625c6a9e9c9b9fa9726b2a98801";
     $client = new \Twilio\Rest\Client($sid, $token);
 
     $message = $client->messages->create(
@@ -47,36 +47,18 @@ function sendOtp($no, $otp)
 
 $data = json_decode(file_get_contents('php://input'), true);
 
-$country = $data['country'];
 $mobileNumber = $data['mobileNumber'];
 // $otp = rand(1111, 9999);
 $otp = 1234;
-// $response = array(
-//     'countryName' => $country,
-//     'mobileNumber' => $mobileNumber,
-// );
 
-// echo json_encode($response,JSON_PRETTY_PRINT);
 
 $mobileFilter = ['mobileNumber' => $mobileNumber];
 $check_mobileNumber = $userCollection->findOne($mobileFilter);
 
 if ($check_mobileNumber) {
-
-    // $updateOtp = sendOtp($mobileNumber, $otp);
-    $updateOtp = "true";
+    $updateOtp = sendOtp($mobileNumber, $otp);
+    // $updateOtp = "true";
     if ($updateOtp == "true") {
-        // if ($check_mobileNumber['verifyStatus'] == "0") {
-        //     $updateData = [
-        //         '$set' => ['otp' => $otp]
-        //     ];
-        //     $situation = "pending";
-        // } else {
-        //     $updateData = [
-        //         '$set' => ['otp' => $otp, 'verifyStatus' => "0"]
-        //     ];
-        //     $situation = "update";
-        // }
         $updateData = [
             '$set' => ['otp' => $otp, 'verifyStatus' => "0"]
         ];
@@ -84,7 +66,7 @@ if ($check_mobileNumber) {
         if ($updateOtpQuery) {
             $response = [
                 'status_code' => '200',
-                'message' => 'otp has been send in your mobile number',
+                'message' => 'otp has been resend in your mobile number',
             ];
         }
     } else {
@@ -94,30 +76,9 @@ if ($check_mobileNumber) {
         ];
     }
 } else {
-    // $insertOtp = sendOtp($mobileNumber, $otp);
-    $insertOtp = "true";
-    if ($insertOtp == "true") {
-        $documents = [
-            'country_name' => $country,
-            'mobileNumber' => $mobileNumber,
-            'otp' => $otp,
-            'verifyStatus' => "0"
-        ];
-
-        $insertuserInfo = $userCollection->insertOne($documents);
-
-        if ($insertuserInfo->getInsertedCount() > 0) {
-            $response = [
-                'status_code' => '200',
-                'situation' => 'insert',
-                'message' => 'otp has been send in your mobile number',
-            ];
-        }
-    } else {
-        $response = [
-            'status_code' => '422',
-            'message' => 'otp has not been send in your mobile number',
-        ];
-    }
+    $response = [
+        'status_code' => '404',
+        'message' => 'user not exist',
+    ];
 }
 echo json_encode($response, JSON_PRETTY_PRINT);
