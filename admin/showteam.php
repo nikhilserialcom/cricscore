@@ -14,7 +14,6 @@ $origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
 if (in_array($origin, $allowedOrigins)) {
     header('Access-Control-Allow-Origin: ' . $origin);
 }
-// header('Access-Control-Allow-Origin: https://cricscorers-15aec.web.app');
 header('Access-Control-Allow-Credentials: true');
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers:  X-Requested-With, Origin, Content-Type, X-CSRF-Token, Accept");
@@ -30,7 +29,10 @@ if(!isset($_SESSION['userId']))
     ];
 }
 else{
-    $teamData = $teamCollection->find([]);
+    $userId = isset($_SESSION['userId']) ? $_SESSION['userId'] : '';
+
+    $team_filter = ['userId' => $userId];
+    $teamData = $teamCollection->find($team_filter);
     
     $team_arr = iterator_to_array($teamData);
     
@@ -38,7 +40,7 @@ else{
     {
         $response = array(
             'status_code' => '200',
-            'arr' => $team_arr
+            'team_arr' => $team_arr
         );
     }
     else

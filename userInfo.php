@@ -25,15 +25,16 @@ $data = json_decode(file_get_contents('php://input'), true);
 
 
 $mobile_number = isset($data['phoneNumber']) ? $data['phoneNumber'] : '';
-$state = isset($data['stateName']) ? $data['stateName'] : '';
-$city = isset($data['cityName']) ? $data['cityName'] : '';
 $name = isset($data['name']) ? $data['name'] : '';
 $email = isset($data['email']) ? $data['email'] : '';
+$address = isset($data['address']) ? $data['address'] : '';
+$player_role = isset($data['role']) ? $data['role'] : '';
+$batting_style = isset($data['battingStyle']) ? $data['battingStyle'] : '';
+$bowling_style = isset($data['bowlingStyle']) ? $data['bowlingStyle'] : '';
 
-// $response = array(
-//     'userId' => $_SESSION['userId']
-// );
-
+// $response = [
+//     'address_data' => $address['country']
+// ];
 
 $userFilter = ['mobileNumber' => $mobile_number];
 $check_user = $userCollection->findOne($userFilter);
@@ -41,10 +42,13 @@ $check_user = $userCollection->findOne($userFilter);
 if ($check_user) {
     $updateData = [
         '$set' => [
-            'stateName' => $state,
-            'cityName' => $city,
             'userName' => $name,
-            'userEmail' => $email
+            'userEmail' => $email,
+            'address' => $address,
+            'player_role' => $player_role,
+            'batting_style' => $batting_style,
+            'bowling_style' => $bowling_style
+
         ]
     ];
 

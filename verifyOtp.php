@@ -1,6 +1,6 @@
 <?php
 session_set_cookie_params([
-    'lifetime' => 3600, 
+    'lifetime' => 6 * 30 * 24 * 60 * 60, 
     'path' => '/', 
     'secure' => true, 
     'httponly' => true,
@@ -59,7 +59,7 @@ if ($check_number) {
             'status_code' => "200",
             'userid' => $_SESSION['userId'],
             'situation' => $situation,
-            'message' => 'Login Succesfully'
+            'message' => 'opt verified successfully'
         ];
     } else {
         $response = [
