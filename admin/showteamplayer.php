@@ -1,43 +1,63 @@
 <?php
-
 require '../partials/mongodbconnect.php';
+$allowedOrigins = [
+    'https://cricscorers-15aec.web.app',
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'http://192.168.1.15:5173',
+];
 
-header("Access-Control-Allow-Origin: *");
+$origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
+
+if (in_array($origin, $allowedOrigins)) {
+    header('Access-Control-Allow-Origin: ' . $origin);
+}
+
+header('Access-Control-Allow-Credentials: true');
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
+header("Access-Control-Allow-Headers:  X-Requested-With, Origin, Content-Type, X-CSRF-Token, Accept");
 header("content-type: application/json");
+header("ngrok-skip-browser-warning: 1");
 
-$playerCollection = $database->players;
+session_start();
 
-$data = json_decode(file_get_contents('php://input'),true);
-
-$teamId = $data['teamId'];
-
-// $response = array(
-//     'status_code' => 200, 
-//     'matchId' => $matchId,
-//     'teamId' => $teamId
-// );
-
-$playerFilter = ['teamId' => $teamId ];
-$check_player = $playerCollection->find($playerFilter);
-
-$playerData = iterator_to_array($check_player);
-
-if(!empty($playerData))
-{
-    $response = array(
-        'status_code' => 200,
-        'player' => $playerData
-    );
+if(!isset($_SESSION['userId'])){
+    $response = [
+        'status_code' => 400,
+        'message' => 'your session is expire'
+    ];
 }
-else
-{
-    $response = array(
-        'status_code' => 404,
-        'message' => 'database empty',
-    );
+else{
+    $data = json_decode(file_get_contents('php://input'),true);
+    
+    $teamId = isset($_GET['teamId']) ? $_GET['teamId'] : '';
+    
+    // $response = array(
+    //     'status_code' => 200, 
+    //     'teamId' => $teamId
+    // );
+    
+    $playerFilter = ['teamId' => $teamId ];
+    $check_player = $playerCollection->find($playerFilter);
+    
+    $playerData = iterator_to_array($check_player);
+    
+    if(!empty($playerData))
+    {
+        $response = array(
+            'status_code' => 200,
+            'player_arr' => $playerData
+        );
+    }
+    else
+    {
+        $response = array(
+            'status_code' => 404,
+            'message' => 'database empty',
+        );
+    }
 }
+
 
 
 echo json_encode($response);
