@@ -35,64 +35,68 @@ if (!isset($_SESSION['userId'])) {
     $address = isset($_POST['address']) ? $_POST['address'] : '';
     $teamId = isset($_POST['teamId']) ? $_POST['teamId'] : '';
 
-    $data = json_decode($address,true);
-    $country_data = $data['country'];
+    foreach ($address as $key => $data) {
+        if ($key == "country") {
+            $country_name = $data['name'];
+            $country_code = $data['phoneCode'];
+        }
+    }
 
-    $response = [
-        'status_code' => '422',
-        'message' => $country_data
-    ];
+    // $response = [
+    //     'status_code' => '422',
+    //     'message' => $country_name . $country_code
+    // ];
 
-    // $user_filter = ['mobileNumber' => $mobileNumber];
-    // $check_user = $userCollection->findOnene($user_filter);
+    $user_filter = ['mobileNumber' => $mobileNumber];
+    $check_user = $userCollection->findOne($user_filter);
 
-    // if($check_user){
-    //     $response = [
-    //         'status_code' => '422',
-    //         'message' => 'user already exist'
-    //     ];
-    // }
-    // else{
-    //     $document = [
-    //         'playerName' => $playerName,
-    //         'mobileNumber' => $mobileNumber,
-    //         'address' => $address,
-    //         // 'playerEmail' => $playerEmail,
-    //         'teamId' => $teamId
-    //     ];
+    if ($check_user) {
+        $response = [
+            'status_code' => '422',
+            'message' => 'user already exist'
+        ];
+    } else {
 
-    //     if (!empty($profile)) {
-    //         $profileTmpName = $_FILES['playerProfile']['tmp_name'];
-    //         $profilenewPart = explode('.', $profile['name']);
-    //         $extension = end($profilenewPart);
-    //         $profileNewName = rand(111111111, 999999999) . "." . $extension;
-    //         $profileDir = 'profile/players/';
-    //         $profilePath = $profileDir . $profileNewName;
-    //         $document['player_profile'] = $profilePath;
-    //         move_uploaded_file($profileTmpName, $profilePath);
-    //     }
 
-    //     $new_user = [
-    //         'country_name' => $country_data['name'],
-    //         'mobileNumber' => $mobileNumber
-    //     ];
+        $new_user = [
+            'country_name' => $country_name,
+            'mobileNumber' => '+' . $country_code . $mobileNumber
+        ];
 
-    //     $userCollection->insertOne($new_user);
-    //     $playerInfo = $playerCollection->insertOne($document);
 
-    //     if ($playerInfo->getInsertedCount() > 0) {
+        $create_user = $userCollection->insertOne($new_user);
+        $playerInfo = $playerCollection->insertOne($document);
 
-    //         $response = [
-    //             'status_code' => '200',
-    //             'message' => 'player add successfully'
-    //         ];
-    //     } else {
-    //         $response = [
-    //             'status_code' => '422',
-    //             'message' => 'sonthing went worng'
-    //         ];
-    //     }
-    // }
+        if ($create_user->getInsertedCount() > 0) {
+            $document = [
+                'playerName' => $playerName,
+                'mobileNumber' => $mobileNumber,
+                'address' => $address,
+                // 'playerEmail' => $playerEmail,
+                'teamId' => $teamId
+            ];
+
+            if (!empty($profile)) {
+                $profileTmpName = $_FILES['playerProfile']['tmp_name'];
+                $profilenewPart = explode('.', $profile['name']);
+                $extension = end($profilenewPart);
+                $profileNewName = rand(111111111, 999999999) . "." . $extension;
+                $profileDir = 'profile/players/';
+                $profilePath = $profileDir . $profileNewName;
+                $document['player_profile'] = $profilePath;
+                move_uploaded_file($profileTmpName, $profilePath);
+            }
+            $response = [
+                'status_code' => '200',
+                'message' => 'player add successfully'
+            ];
+        } else {
+            $response = [
+                'status_code' => '422',
+                'message' => 'sonthing went worng'
+            ];
+        }
+    }
 }
 
 echo json_encode($response);
