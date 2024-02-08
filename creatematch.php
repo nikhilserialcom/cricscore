@@ -56,7 +56,7 @@ if (!isset($_SESSION['userId'])) {
             'ball_economy' => "0",
             'run_saved' => "0",
             'run_missed' => "0",
-            "player_role" => "0"
+            "player_role" => ""
         ];
 
         $finalTeamA[] = $addPlayer;
@@ -82,7 +82,7 @@ if (!isset($_SESSION['userId'])) {
             'ball_economy' => "0",
             'run_saved' => "0",
             'run_missed' => "0",
-            "player_role" => "0"
+            "player_role" => ""
         ];
 
         $finalTeamB[] = $addPlayer;

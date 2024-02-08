@@ -1,3 +1,4 @@
+add player
 <?php
 session_start();
 
@@ -33,7 +34,7 @@ if (!isset($_SESSION['userId'])) {
     $mobileNumber = isset($_POST['mobileNumber']) ? $_POST['mobileNumber'] : '';
     // $playerEmail = isset($_POST['playerEmail']) ?  $_POST['playerEmail'] : '';
     $address = isset($_POST['address']) ? $_POST['address'] : '';
-    $teamId = isset($_POST['teamId']) ? new MongoDB\BSON\ObjectId($_POST['teamId']) : '';
+    $teamId = isset($_POST['teamId']) ? $_POST['teamId'] : '';
 
     foreach ($address as $key => $data) {
         if ($key == "country") {
@@ -46,61 +47,63 @@ if (!isset($_SESSION['userId'])) {
     //     'status_code' => '422',
     //     'message' => $country_name . $country_code
     // ];
-    $final_number = '+' . $country_code . $mobileNumber;
 
-    $user_filter = ['mobileNumber' => $final_number];
+    $user_filter = ['mobileNumber' => $mobileNumber];
     $check_user = $userCollection->findOne($user_filter);
 
     if ($check_user) {
         $response = [
             'status_code' => '422',
-            'message' => 'mobile number already exist'
+            'message' => 'user already exist'
         ];
     } else {
 
+
         $new_user = [
             'country_name' => $country_name,
-            'mobileNumber' => '+' . $country_code . $mobileNumber,
-            'address' => $address,
-            'userName' => $playerName
+            'mobileNumber' => '+' . $country_code . $mobileNumber
         ];
 
-      
-        if (!empty($profile)) {
-            $profileTmpName = $_FILES['playerProfile']['tmp_name'];
-            $profilenewPart = explode('.', $profile['name']);
-            $extension = end($profilenewPart);
-            $profileNewName = rand(111111111, 999999999) . "." . $extension;
-            $profileDir = 'profile/players/';
-            $profilePath = $profileDir . $profileNewName;
-            $new_user['player_profile'] = $profilePath;
-            move_uploaded_file($profileTmpName, $profilePath);
-        }
 
         $create_user = $userCollection->insertOne($new_user);
+        $playerInfo = $playerCollection->insertOne($document);
 
         if ($create_user->getInsertedCount() > 0) {
-            $player_id = $create_user -> getInsertedId();
-            
-            $team_member = $teamCollection ->findOne(['_id' =>$teamId]);
             $document = [
-                '$push' =>[ 'member' => $player_id->__toString()],
+                'playerName' => $playerName,
+                'mobileNumber' => $mobileNumber,
+                'address' => $address,
+                // 'playerEmail' => $playerEmail,
+                'teamId' => $teamId
             ];
 
-            $add_member = $teamCollection->updateOne(['_id' => $teamId],$document);
-            if($add_member){
-                $response = [
-                    'status_code' => '200',
-                    'message' => 'player add successfully'
-                ];
+            if (!empty($profile)) {
+                $profileTmpName = $_FILES['playerProfile']['tmp_name'];
+                $profilenewPart = explode('.', $profile['name']);
+                $extension = end($profilenewPart);
+                $profileNewName = rand(111111111, 999999999) . "." . $extension;
+                $profileDir = 'profile/players/';
+                $profilePath = $profileDir . $profileNewName;
+                $document['player_profile'] = $profilePath;
+                move_uploaded_file($profileTmpName, $profilePath);
             }
+            $response = [
+                'status_code' => '200',
+                'message' => 'player add successfully'
+            ];
         } else {
             $response = [
-                'status_code' => '400',
+                'status_code' => '422',
                 'message' => 'sonthing went worng'
             ];
         }
     }
 }
+$document = [
+                '_id' => $player_id,
+                'teamId' => $teamId,
+            ];
+
+            $playerCollection->insertOne($document);
 
 echo json_encode($response);

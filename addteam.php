@@ -59,7 +59,8 @@ else{
        $document = [
             'userId' => $userId,
             'teamName' => $teamName,   
-            'teamCity' => $teamCity
+            'teamCity' => $teamCity,
+            'member' => []
         ];
 
         if($profile){

@@ -25,6 +25,7 @@ if(isset($_SESSION['userId']))
 {
     $response = [
         'status_code' => "200",
+        'session_id' => $_SESSION['userId']
     ];
 }
 else{
