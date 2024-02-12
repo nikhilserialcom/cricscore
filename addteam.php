@@ -60,7 +60,7 @@ else{
             'userId' => $userId,
             'teamName' => $teamName,   
             'teamCity' => $teamCity,
-            'member' => []
+            'member' => array()
         ];
 
         if($profile){

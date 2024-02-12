@@ -1,4 +1,10 @@
 <?php
+session_set_cookie_params([
+    'lifetime' => 6 * 30 * 24 * 60 * 60, 
+    'path' => '/', 
+    'secure' => true, 
+    'httponly' => true,
+    'samesite' => 'None']);
 session_start();
 
 require 'partials/mongodbconnect.php';
@@ -54,6 +60,9 @@ if ($check_user) {
 
     $updateuserInfo = $userCollection->updateOne($userFilter, $updateData);
     if ($updateData) {
+        if(!isset($_SESSION['userId'])){
+            $_SESSION['userId'] = $check_user['_id'];
+        }
         $response = [
             'status_code' => "200",
             'message' => 'Login Succesfully'

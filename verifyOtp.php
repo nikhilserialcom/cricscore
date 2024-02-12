@@ -43,9 +43,9 @@ $check_number = $userCollection->findOne($mobileFilter);
 
 if ($check_number) {
     if ($check_number['otp'] == $otp) {
-        $_SESSION['userId'] = $check_number['_id'];
         if(!empty($check_number['userEmail'])){
             $situation = "update";
+            $_SESSION['userId'] = $check_number['_id'];
         }else{
             $situation = "pending";
         }
@@ -57,7 +57,6 @@ if ($check_number) {
         $updateOtpQuery = $userCollection->updateOne($mobileFilter, $updateData);
         $response = [
             'status_code' => "200",
-            'userid' => $_SESSION['userId'],
             'situation' => $situation,
             'message' => 'opt verified successfully'
         ];

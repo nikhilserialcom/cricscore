@@ -1,5 +1,6 @@
 <?php
 require '../partials/mongodbconnect.php';
+use MongoDB\BSON\ObjectId;
 $allowedOrigins = [
     'https://cricscorers-15aec.web.app',
     'http://localhost:5173',
@@ -30,23 +31,31 @@ if(!isset($_SESSION['userId'])){
 else{
     $data = json_decode(file_get_contents('php://input'),true);
     
-    $teamId = isset($_GET['teamId']) ? $_GET['teamId'] : '';
+    $teamId = isset($_GET['teamId']) ? new ObjectId($_GET['teamId']) : '';
     
     // $response = array(
     //     'status_code' => 200, 
     //     'teamId' => $teamId
     // );
     
-    $playerFilter = ['teamId' => $teamId ];
-    $check_player = $playerCollection->find($playerFilter);
+    $playerFilter = ['_id' => $teamId ];
+    $check_player = $teamCollection->findOne($playerFilter);
     
-    $playerData = iterator_to_array($check_player);
-    
-    if(!empty($playerData))
+    if($check_player)
     {
+        $player_arr = array();
+        foreach($check_player['member'] as $player){
+            $filter_player = ['_id' => new ObjectId($player)];
+            $find_player = $userCollection->findOne($filter_player);
+
+            if($find_player)
+            {
+                $player_arr[] = $find_player;
+            }
+        }
         $response = array(
             'status_code' => 200,
-            'player_arr' => $playerData
+            'player_arr' => $player_arr
         );
     }
     else

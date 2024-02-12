@@ -66,17 +66,6 @@ if ($check_mobileNumber) {
     // $updateOtp = sendOtp($mobileNumber, $otp);
     $updateOtp = "true";
     if ($updateOtp == "true") {
-        // if ($check_mobileNumber['verifyStatus'] == "0") {
-        //     $updateData = [
-        //         '$set' => ['otp' => $otp]
-        //     ];
-        //     $situation = "pending";
-        // } else {
-        //     $updateData = [
-        //         '$set' => ['otp' => $otp, 'verifyStatus' => "0"]
-        //     ];
-        //     $situation = "update";
-        // }
         $updateData = [
             '$set' => ['otp' => $otp, 'verifyStatus' => "0"]
         ];
@@ -109,7 +98,6 @@ if ($check_mobileNumber) {
         if ($insertuserInfo->getInsertedCount() > 0) {
             $response = [
                 'status_code' => '200',
-                'situation' => 'insert',
                 'message' => 'otp has been send in your mobile number',
             ];
         }

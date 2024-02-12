@@ -47,7 +47,7 @@ else{
     {
         $response = array(
             'status_code' => '404',
-            'message' => 'database empty'
+            'team_arr ' => $team_arr
         );
     }
 }
