@@ -73,7 +73,7 @@ if (!isset($_SESSION['userId'])) {
             $profileNewName = rand(111111111, 999999999) . "." . $extension;
             $profileDir = 'profile/players/';
             $profilePath = $profileDir . $profileNewName;
-            $new_user['player_profile'] = $profilePath;
+            $new_user['userProfile'] = $profilePath;
             move_uploaded_file($profileTmpName, $profilePath);
         }
 

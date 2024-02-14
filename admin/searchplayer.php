@@ -33,21 +33,37 @@ $playerFilter = [
 ];
 
 $options = ['limit' => 20];
-$check_player = $userCollection->find($playerFilter,$options);
+$check_player = $userCollection->find($playerFilter, $options);
 
 $arr_of_object = [];
 
 foreach ($check_player as $document) {
-    $player_data = [
-        '_id' => $document['_id'],
-        'player_profile' => isset($document['userProfile']) ? $document['userProfile'] :'',
-        'player_name' => $document['userName']
-    ];
-    $arr_of_object[] = $player_data;
+    if(!empty($document['userName'])){
+        $player_data = [
+            '_id' => $document['_id'],
+            'userProfile' => isset($document['userProfile']) ? $document['userProfile'] : '',
+            'userName' => isset($document['userName']) ? $document['userName'] : '',
+            'address' => isset($document['address']) ? $document['address'] : '',
+            'mobileNumber' => isset($document['mobileNumber']) ? $document['mobileNumber'] : ''
+        ];
+        $arr_of_object[] = $player_data;
+    }
 }
 
 usort($arr_of_object,function($a,$b) {
-    return strlen($a['player_name']) - strlen($b['player_name']);
+    if($a['userName'] != "" && $b['userName']){
+        return strlen($a['userName']) - strlen($b['userName']);
+    }
+    else{
+        if($a['userName'] != ""){
+            return -1;
+        }
+        elseif($b['userName'] != ""){
+            return 1;
+        }else{
+            return 0;
+        }
+    }
 });
 
 if (!empty($arr_of_object)) {
