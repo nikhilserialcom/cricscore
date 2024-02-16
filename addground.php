@@ -64,7 +64,8 @@ if (!isset($_SESSION['userId'])) {
             'address' => $ground_address,
             'city' => $city,
             'ownerNumber' => $owner_number,
-            'matchs' => 0
+            'matchs' => 0,
+            'createdAt' => date("Y-m-d H:i:s")
         ];
 
         if (!empty($profile)) {

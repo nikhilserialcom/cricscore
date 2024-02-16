@@ -28,12 +28,11 @@ if (!isset($_SESSION['userId'])) {
         'message' => 'your session is expire'
     ];
 } else {
-    $profile = isset($_FILES['playerProfile']) ? $_FILES['playerProfile'] : null;
-    $playerName = isset($_POST['playerName']) ? $_POST['playerName'] : '';
-    $mobileNumber = isset($_POST['mobileNumber']) ? $_POST['mobileNumber'] : '';
-    // $playerEmail = isset($_POST['playerEmail']) ?  $_POST['playerEmail'] : '';
+    $profile = isset($_FILES['profile']) ? $_FILES['profile'] : null;
+    $username = isset($_POST['userName']) ? $_POST['userName'] : '';
+    $mobile_no = isset($_POST['mobileNumber']) ? $_POST['mobileNumber'] : '';
+    $role = isset($_POST['role']) ? $_POST['role'] : '';
     $address = isset($_POST['address']) ? $_POST['address'] : '';
-    $teamId = isset($_POST['teamId']) ? new MongoDB\BSON\ObjectId($_POST['teamId']) : '';
 
     foreach ($address as $key => $data) {
         if ($key == "country") {
@@ -41,34 +40,28 @@ if (!isset($_SESSION['userId'])) {
             $country_code = $data['phoneCode'];
         }
     }
-
-    // $response = [
-    //     'status_code' => '422',
-    //     'message' => $country_name . $country_code
-    // ];
-    $final_number = '+' . $country_code . $mobileNumber;
+    $role_arr = array($role);
+    $final_number = '+' . $country_code . $mobile_no;
 
     $user_filter = ['mobileNumber' => $final_number];
     $check_user = $userCollection->findOne($user_filter);
 
     if ($check_user) {
-        $response = [
-            'status_code' => '422',
-            'message' => 'mobile number already exist'
-        ];
+        $response = array(
+            'status_code' => "422",
+            'message' => 'moible number already exist'
+        );
     } else {
-
         $new_user = [
             'countryName' => $country_name,
-            'mobileNumber' => '+' . $country_code . $mobileNumber,
+            'mobileNumber' => $final_number,
             'address' => $address,
-            'userName' => $playerName,
-            'createdAt' => date("Y-m-d H:i:s")
+            'userName' => $username,
+            'role' => $role_arr,
+            'createAt' => date("Y-m-d H:i:s")
         ];
-
-      
-        if (!empty($profile)) {
-            $profileTmpName = $_FILES['playerProfile']['tmp_name'];
+        if (!empty($profile['name'])) {
+            $profileTmpName = $_FILES['profile']['tmp_name'];
             $profilenewPart = explode('.', $profile['name']);
             $extension = end($profilenewPart);
             $profileNewName = rand(111111111, 999999999) . "." . $extension;
@@ -81,27 +74,17 @@ if (!isset($_SESSION['userId'])) {
         $create_user = $userCollection->insertOne($new_user);
 
         if ($create_user->getInsertedCount() > 0) {
-            $player_id = $create_user -> getInsertedId();
-            
-            $team_member = $teamCollection ->findOne(['_id' =>$teamId]);
-            $document = [
-                '$push' =>[ 'member' => $player_id->__toString()],
-            ];
-
-            $add_member = $teamCollection->updateOne(['_id' => $teamId],$document);
-            if($add_member){
-                $response = [
-                    'status_code' => '200',
-                    'message' => 'player add successfully'
-                ];
-            }
+            $response = array(
+                'status_code' => "200",
+                'message' => "new user created successfully"
+            );
         } else {
-            $response = [
-                'status_code' => '400',
-                'message' => 'somthing went worng'
-            ];
+            $response = array(
+                'status_code' => "400",
+                'message' => "something went to worng"
+            );
         }
     }
 }
 
-echo json_encode($response);
+echo json_encode($response, JSON_PRETTY_PRINT);

@@ -1,16 +1,22 @@
 <?php
-session_start();
+require '../partials/mongodbconnect.php';
+$allowedOrigins = [
+    'https://cricscorers-15aec.web.app',
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'http://192.168.1.15:5173',
+];
 
-require 'partials/mongodbconnect.php';
+$origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
 
-use MongoDB\BSON\ObjectId;
-
+if (in_array($origin, $allowedOrigins)) {
+    header('Access-Control-Allow-Origin: ' . $origin);
+}
 header('Access-Control-Allow-Credentials: true');
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers:  X-Requested-With, Origin, Content-Type, X-CSRF-Token, Accept");
 header("content-type: application/json");
-
-$data = json_decode(file_get_contents('php://input'), true);
+header("ngrok-skip-browser-warning: 1");
 
 if (!isset($_SESSION['userId'])) {
     $response = [
@@ -19,21 +25,21 @@ if (!isset($_SESSION['userId'])) {
     ];
 } else {
     $userId = isset($_SESSION['userId']) ? $_SESSION['userId'] : '';
-    $teamA_id = isset($data['teamA']) ? $data['teamA'] : '';
-    $teamB_id = isset($data['teamB']) ? $data['teamB'] : '';
-    $matchType = isset($data['matchType']) ? $data['matchType'] : '';
-    $totalOver = isset($data['totalOver']) ? $data['totalOver'] : '';
-    $over_per_bowler = isset($data['over_per_bowler']) ? $data['over_per_bowler'] : '';
-    $cityName = isset($data['cityName']) ? $data['cityName'] : '';
-    $groundName = isset($data['groundName']) ? $data['groundName'] : '';
-    $matchDate = isset($data['match_date']) ? $data['match_date'] : '';
-    $ballType = isset($data['ballType']) ? $data['ballType'] : '';
-    $patchType = isset($data['patchType']) ? $data['patchType'] : '';
-    $teamA_player = isset($data['teamAPlayer']) ? $data['teamAPlayer'] : '';
-    $teamB_player = isset($data['teamBPlayer']) ? $data['teamBPlayer'] : '';
-    $umpires = isset($data['umpires']) ? $data['umpires'] : '';
-    $scorer = isset($data['scorer']) ? $data['scorer'] : '';
-    $commentator = isset($data['commentator']) ? $data['commentator'] : '';
+    $teamA_id = isset($_POST['teamA']) ? $_POST['teamA'] : '';
+    $teamB_id = isset($_POST['teamB']) ? $_POST['teamB'] : '';
+    $matchType = isset($_POST['matchType']) ? $_POST['matchType'] : '';
+    $totalOver = isset($_POST['totalOver']) ? $_POST['totalOver'] : '';
+    $over_per_bowler = isset($_POST['overPerBowler']) ? $_POST['overPerBowler'] : '';
+    $cityName = isset($_POST['cityName']) ? $_POST['cityName'] : '';
+    $groundName = isset($_POST['groundName']) ? $_POST['groundName'] : '';
+    $matchDate = isset($_POST['matchDate']) ? $_POST['matchDate'] : '';
+    $ballType = isset($_POST['ballType']) ? $_POST['ballType'] : '';
+    $patchType = isset($_POST['patchType']) ? $_POST['patchType'] : '';
+    $teamA_player = isset($_POST['teamAPlayer']) ? $_POST['teamAPlayer'] : '';
+    $teamB_player = isset($_POST['teamBPlayer']) ? $_POST['teamBPlayer'] : '';
+    $umpires = isset($_POST['umpires']) ? $_POST['umpires'] : '';
+    $scorer = isset($_POST['scorer']) ? $_POST['scorer'] : '';
+    $commentator = isset($_POST['commentator']) ? $_POST['commentator'] : '';
 
     $finalTeamA = $finalTeamB =  [];
     foreach ($teamA_player as $teamA) {

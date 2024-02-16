@@ -32,6 +32,7 @@ else{
     $userId = isset($_SESSION['userId']) ? $_SESSION['userId'] : '';
 
     $team_filter = ['userId' => $userId];
+    $options = ['sort' => ['createdAt' => -1]];
     $teamData = $teamCollection->find($team_filter);
     
     $team_arr = iterator_to_array($teamData);

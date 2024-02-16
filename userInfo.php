@@ -51,10 +51,10 @@ if ($check_user) {
             'userName' => $name,
             'userEmail' => $email,
             'address' => $address,
-            'player_role' => $player_role,
-            'batting_style' => $batting_style,
-            'bowling_style' => $bowling_style
-
+            'playerRole' => $player_role,
+            'battingStyle' => $batting_style,
+            'bowlingStyle' => $bowling_style,
+            'createdAt' => date("Y-m-d H:i:s")
         ]
     ];
 

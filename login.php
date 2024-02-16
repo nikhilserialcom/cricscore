@@ -87,7 +87,7 @@ if ($check_mobileNumber) {
     $insertOtp = "true";
     if ($insertOtp == "true") {
         $documents = [
-            'country_name' => $country,
+            'countryName' => $country,
             'mobileNumber' => $mobileNumber,
             'otp' => $otp,
             'verifyStatus' => "0"

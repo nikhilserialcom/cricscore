@@ -28,7 +28,8 @@ $playerName = isset($_GET['search_input']) ? $_GET['search_input'] : '';
 $playerFilter = [
     '$or' => [
         ['userName' => ['$regex' => '.*' . $playerName . '.*', '$options' => 'i']],
-        ['mobileNumber' => ['$regex' => '.*' . $playerName . '.*', '$options' => 'i']]
+        ['mobileNumber' => ['$regex' => '.*' . $playerName . '.*', '$options' => 'i']],
+        ['city' =>  ['$regex' => '.*' . $playerName . '.*', '$options' => 'i']]
     ]
 ];
 

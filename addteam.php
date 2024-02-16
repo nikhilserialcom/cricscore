@@ -60,7 +60,8 @@ else{
             'userId' => $userId,
             'teamName' => $teamName,   
             'teamCity' => $teamCity,
-            'member' => array()
+            'member' => array(),
+            'createdAt' => date("Y-m-d H:i:s")
         ];
 
         if($profile){
