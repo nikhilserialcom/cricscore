@@ -4,24 +4,39 @@ session_start();
 
 require '../partials/mongodbconnect.php';
 
+$allowedOrigins = [
+    'https://cricscorers-15aec.web.app',
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'http://192.168.1.23:5173',
+];
+
+$origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
+
+if (in_array($origin, $allowedOrigins)) {
+    header('Access-Control-Allow-Origin: ' . $origin);
+}
 header('Access-Control-Allow-Credentials: true');
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers:  X-Requested-With, Origin, Content-Type, X-CSRF-Token, Accept");
 header("content-type: application/json");
+header("ngrok-skip-browser-warning: 1");
 
 $data = json_decode(file_get_contents('php://input'), true);
 
 if(!isset($_SESSION['userId']))
 {
     $response = [
-        'status_code' => 404,
+        'status_code' => 400,
         'message' => 'your session is expire'
     ];
 }
 else{
     $matchId = isset($data['matchId']) ? new MongoDB\BSON\ObjectId($data['matchId']) : '';
-    $toss = isset($data['team_id']) ? $data['team_id'] : '';
-    $elected = isset($data['elected']) ? $data['elected'] : '';
+    $toss = isset($data['toss']) ? $data['toss'] : '';
+    $striker = isset($data['striker']) ? $data['striker'] : '';
+    $non_striker = isset($data['nonStriker']) ? $data['nonStriker'] : '';
+    $bowler = isset($data['bowler']) ? $data['bowler'] : '';
     
     $match_fillter = ['_id' => $matchId];
     $matches = $matchCollection->findOne($match_fillter);
@@ -30,7 +45,10 @@ else{
         $document = [
             '$set' => [
                'toss' => $toss,
-               'elected' => $elected
+               'striker' => $striker,
+               'nonStriker' => $non_striker,
+               'bowler' => $bowler,
+               'matchStatus' => "startInning"
             ]
         ];
     
@@ -38,14 +56,9 @@ else{
         if ($update_match->getModifiedCount() > 0) {
             $response = [
                 'status_code' => '200',
-                'message' => $matches
+                'message' => "start match"
             ];
-        } else {
-            $response = [
-                'status_code' => '400',
-                'message' => 'match update failed'
-            ];
-        }
+        } 
     } else {
         $response = [
             'status_code' => '404',

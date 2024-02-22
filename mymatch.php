@@ -4,11 +4,23 @@ session_start();
 require 'partials/mongodbconnect.php';
 
 use MongoDB\BSON\ObjectId;
-// header('Access-Control-Allow-Credentials: true');
-// header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-// header("Access-Control-Allow-Headers:  X-Requested-With, Origin, Content-Type, X-CSRF-Token, Accept");
-// header("content-type: application/json");
-// header("ngrok-skip-browser-warning: 1");
+$allowedOrigins = [
+    'https://cricscorers-15aec.web.app',
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'http://192.168.1.23:5173',
+];
+
+$origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
+
+if (in_array($origin, $allowedOrigins)) {
+    header('Access-Control-Allow-Origin: ' . $origin);
+}
+header('Access-Control-Allow-Credentials: true');
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+header("Access-Control-Allow-Headers:  X-Requested-With, Origin, Content-Type, X-CSRF-Token, Accept");
+header("content-type: application/json");
+header("ngrok-skip-browser-warning: 1");
 
 if (!isset($_SESSION['userId'])) {
     $response = [
@@ -26,8 +38,8 @@ if (!isset($_SESSION['userId'])) {
     foreach ($checkMatch as $match) {
         $teamAName = $teamCollection->findOne(['_id' => new ObjectId($match['teamA_id'])]);
         $teamBName = $teamCollection->findOne(['_id' => new ObjectId($match['teamB_id'])]);
-        $match['teamA_id'] = $teamAName['teamName'];
-        $match['teamB_id'] = $teamBName['teamName'];
+        $match['teamA'] = $teamAName['teamName'];
+        $match['teamB'] = $teamBName['teamName'];
         $matches[] = $match;
     }
 
@@ -39,6 +51,7 @@ if (!isset($_SESSION['userId'])) {
     } else {
         $response = [
             'status_code' => "404",
+            'userId' => $userId,
             'message' => 'No record found'
         ];
     }

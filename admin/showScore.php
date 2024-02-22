@@ -1,35 +1,55 @@
 <?php
+session_start();
 
 require '../partials/mongodbconnect.php';
+use MongoDB\BSON\ObjectId;
+$allowedOrigins = [
+    'https://cricscorers-15aec.web.app',
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'http://192.168.1.23:5173',
+];
 
-header("Access-Control-Allow-Origin: *");
+$origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
+
+if (in_array($origin, $allowedOrigins)) {
+    header('Access-Control-Allow-Origin: ' . $origin);
+}
+header('Access-Control-Allow-Credentials: true');
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
+header("Access-Control-Allow-Headers:  X-Requested-With, Origin, Content-Type, X-CSRF-Token, Accept");
 header("content-type: application/json");
-
-$matchCollection = $database->matchs;
+header("ngrok-skip-browser-warning: 1");
 
 $data = json_decode(file_get_contents('php://input'),true);
-
-$matchId = $data['match_id'];
-
-$matchFilter = ['_id' => new MongoDB\BSON\ObjectId($matchId)];
-$checkmatch = $matchCollection->findOne($matchFilter);
-
-if($checkmatch)
-{
+if (!isset($_SESSION['userId'])) {
     $response = [
-        'status_code' => 200,
-        'match' => $checkmatch
+        'status_code' => 400,
+        'message' => 'your session is expire'
     ];
+} else {
+    
+    $matchId = isset($data['matchId']) ?  $data['matchId'] : '';
+    
+    $matchFilter = ['_id' => new ObjectId($matchId)];
+    $checkmatch = $matchCollection->findOne($matchFilter);
+    
+    if($checkmatch)
+    {
+        $response = [
+            'status_code' => 200,
+            'match' => $checkmatch
+        ];
+    }
+    else
+    {
+        $response = [
+            'status_code' => 404,
+            'message' => 'database empty'
+        ];
+    }
 }
-else
-{
-    $response = [
-        'status_code' => 404,
-        'message' => 'database empty'
-    ];
-}
+
 
 echo json_encode($response);
 ?>

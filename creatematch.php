@@ -1,10 +1,13 @@
 <?php
-require '../partials/mongodbconnect.php';
+session_start();
+require 'partials/mongodbconnect.php';
+
+use MongoDB\BSON\ObjectId;
 $allowedOrigins = [
     'https://cricscorers-15aec.web.app',
     'http://localhost:5173',
     'http://localhost:5174',
-    'http://192.168.1.15:5173',
+    'http://192.168.1.23:5173',
 ];
 
 $origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
@@ -20,34 +23,39 @@ header("ngrok-skip-browser-warning: 1");
 
 if (!isset($_SESSION['userId'])) {
     $response = [
-        'status_code' => 404,
+        'status_code' => 400,
         'message' => 'your session is expire'
     ];
 } else {
+
+    $data = json_decode(file_get_contents('php://input'), true);
+
     $userId = isset($_SESSION['userId']) ? $_SESSION['userId'] : '';
-    $teamA_id = isset($_POST['teamA']) ? $_POST['teamA'] : '';
-    $teamB_id = isset($_POST['teamB']) ? $_POST['teamB'] : '';
-    $matchType = isset($_POST['matchType']) ? $_POST['matchType'] : '';
-    $totalOver = isset($_POST['totalOver']) ? $_POST['totalOver'] : '';
-    $over_per_bowler = isset($_POST['overPerBowler']) ? $_POST['overPerBowler'] : '';
-    $cityName = isset($_POST['cityName']) ? $_POST['cityName'] : '';
-    $groundName = isset($_POST['groundName']) ? $_POST['groundName'] : '';
-    $matchDate = isset($_POST['matchDate']) ? $_POST['matchDate'] : '';
-    $ballType = isset($_POST['ballType']) ? $_POST['ballType'] : '';
-    $patchType = isset($_POST['patchType']) ? $_POST['patchType'] : '';
-    $teamA_player = isset($_POST['teamAPlayer']) ? $_POST['teamAPlayer'] : '';
-    $teamB_player = isset($_POST['teamBPlayer']) ? $_POST['teamBPlayer'] : '';
-    $umpires = isset($_POST['umpires']) ? $_POST['umpires'] : '';
-    $scorer = isset($_POST['scorer']) ? $_POST['scorer'] : '';
-    $commentator = isset($_POST['commentator']) ? $_POST['commentator'] : '';
+    $teamA_id = isset($data['teamA']) ? $data['teamA'] : '';
+    $teamB_id = isset($data['teamB']) ? $data['teamB'] : '';
+    $matchType = isset($data['matchType']) ? $data['matchType'] : '';
+    $totalOver = isset($data['noOfOvers']) ? $data['noOfOvers'] : '';
+    $over_per_bowler = isset($data['noOfOversPerBowler']) ? $data['noOfOversPerBowler'] : '';
+    $cityName = isset($data['cityName']) ? $data['cityName'] : '';
+    $ground = isset($data['ground']) ? $data['ground'] : '';
+    $matchDate = isset($data['dateTime']) ? $data['dateTime'] : '';
+    $powerPlay = isset($data['powerplay']) ? $data['powerplay'] : '';
+    $ballType = isset($data['ballType']) ? $data['ballType'] : '';
+    $patchType = isset($data['pitchType']) ? $data['pitchType'] : ''; 
+    $teamA_player = isset($data['teamAPlayers']) ? $data['teamAPlayers'] : '';
+    $teamB_player = isset($data['teamBPlayers']) ? $data['teamBPlayers'] : '';
+    $officials = isset($data['officials']) ? $data['officials'] : '';
+
+    $teamB_array = $teamB_player['players'];
+    $teamA_array = $teamA_player['players'];
 
     $finalTeamA = $finalTeamB =  [];
-    foreach ($teamA_player as $teamA) {
+    foreach ($teamA_player['players'] as $teamA) {
         $filterPlayer = ['_id' => new ObjectId($teamA)];
-        $findName = $playerCollection->findOne($filterPlayer);
+        $findName = $userCollection->findOne($filterPlayer);
         $addPlayer = [
             'player_id' => $teamA,
-            'playerName' => $findName['playerName'],
+            'playerName' => $findName['userName'],
             'bat_4' => "0",
             'bat_6' => "0",
             'bat_liveRun' => "0",
@@ -68,12 +76,12 @@ if (!isset($_SESSION['userId'])) {
         $finalTeamA[] = $addPlayer;
     }
 
-    foreach ($teamB_player as $teamB) {
+    foreach ($teamB_player['players'] as $teamB) {
         $filterPlayer = ['_id' => new ObjectId($teamB)];
-        $findName = $playerCollection->findOne($filterPlayer);
+        $findName = $userCollection->findOne($filterPlayer);
         $addPlayer = [
             'player_id' => $teamB,
-            'playerName' => $findName['playerName'],
+            'playerName' => $findName['userName'],
             'bat_4' => "0",
             'bat_6' => "0",
             'bat_liveRun' => "0",
@@ -94,23 +102,46 @@ if (!isset($_SESSION['userId'])) {
         $finalTeamB[] = $addPlayer;
     }
 
+    // $response = array(
+    //     'userId' => $userId,
+    //     'teamA' => $teamA_id,
+    //     'teamB' => $teamB_id,
+    //     'matchTpye' => $matchType,
+    //     'noOfOvers' => $totalOver,
+    //     'noOfOversPerBowler' => $over_per_bowler,
+    //     'cityName' => $cityName,
+    //     'powerplay' => $powerPlay,
+    //     'gruound' => $ground,
+    //     'dateTime' => $matchDate,
+    //     'ballType' => $ballType,
+    //     'pitchType' => $patchType,
+    //     'teamAPlayers' =>  $finalTeamA,
+    //     'teamBPlayers' =>  $finalTeamB,
+    //     'officials' => $officials,
+    // ); 
+
     $document = [
         'userId' => $userId,
-        'teamA_id' => $teamA_id,
-        'teamB_id' => $teamB_id,
-        'match_tpye' => $matchType,
-        'total_over' => $totalOver,
-        'over_per_bowler' => $over_per_bowler,
-        'city_name' => $cityName,
-        'gruound_name' => $groundName,
-        'match_date' => $matchDate,
-        'ball_type' => $ballType,
-        'patch_type' => $patchType,
-        'teamA' =>  $finalTeamA,
-        'teamB' =>  $finalTeamB,
-        'umpires' => $umpires,
-        'scorer' => $scorer,
-        'commentator' => $commentator
+        'teamA' => $teamA_id,
+        'teamB' => $teamB_id,
+        'matchTpye' => $matchType,
+        'noOfOvers' => $totalOver,
+        'noOfOversPerBowler' => $over_per_bowler,
+        'cityName' => $cityName,
+        'powerplay' => $powerPlay,
+        'gruound' => $ground,
+        'dateTime' => $matchDate,
+        'ballType' => $ballType,
+        'pitchType' => $patchType,
+        'teamAPlayers' => [
+            'players' => $finalTeamA,
+            'roles' => $teamA_player['roles']
+        ],
+        'teamBPlayers' => [
+            'players' =>$finalTeamB,
+            'roles' => $teamB_player['roles']
+        ],
+        'officials' => $officials,
     ];
 
     $createMatch = $matchCollection->insertOne($document);
@@ -118,6 +149,7 @@ if (!isset($_SESSION['userId'])) {
     if ($createMatch) {
         $response = [
             'status_code' => "200",
+            'matchId' => $createMatch -> getInsertedId(),
             'message' => "match create successfully !"
         ];
     } else {
