@@ -20,30 +20,39 @@ $playerId = isset($data['playerId']) ? $data['playerId'] : '';
 $finalId = [];
 
 foreach ($playerId as $id) {
-    $filterPlayer = ['_id' => new ObjectId($id)];
-    $checkplayer = $playerCollection->findOne($filterPlayer);
     $addplayer = [
-        '_id' =>$id,
-        'playerName' => $checkplayer['playerName'],
-        'bat_4' => "0",
-        'bat_6' => "0",
-        'bat_liveRun' => "0",
-        'bat_ball' => "0",
-        'bat_strike_rate' => "0",
-        'ball_over' => "0",
-        'ball_maiden' => "0",
-        'ball_wicket' => "0",
-        'ball_liveRun' => "0",
-        'ball_no_bowl' => "0",
-        'ball_wides_bowled' => "0",
-        'ball_economy' => "0",
-        'run_saved' => "0",
-        'run_missed' => "0",
-        "player_role" => "0"
+        'player_id' =>$id,
+        'batting' => [
+            'runs' => 0,
+            'ball' => 0,
+            'four' => 0,
+            'six' => 0,
+            'strikeRate' => 0,
+            'batStatus' => "not out"
+        ],
+        'bowling' => [
+            'runs' => 0,
+            'over' => 0,
+            'wicket' => 0,
+            'economy' => 0,
+            'maidenOver' => 0,
+            'wideBall' => 0,
+            'noBall' => 0,
+            'extra' => [
+                'W' => 0,
+                'NB' => 0,
+            ]
+        ],
+        'filder' => [
+            'misRun' => 0,
+            'saveRun' => 0,
+            'dropCatch' => 0,
+            'catch' => 0,
+        ] 
+        
     ];
     $finalId[] = $addplayer;
 }
-
 
 // $response = array(
 //     'match_id' => $matchId,

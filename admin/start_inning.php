@@ -9,7 +9,7 @@ $allowedOrigins = [
     'https://cricscorers-15aec.web.app',
     'http://localhost:5173',
     'http://localhost:5174',
-    'http://192.168.1.23:5173',
+    'http://192.168.1.15:5173/',
 ];
 
 $origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
@@ -68,42 +68,48 @@ if (!isset($_SESSION['userId'])) {
     $matchId = isset($data['matchId']) ? $data['matchId'] : '';
     if (!preg_match('/^[0-9a-fA-F]{24}$/', $matchId)) {
         $response = [
-            'status_code' => 404,
+            'status_code' => 500,
             'message' => 'Invalid matchId format'
         ];
     } else {
         $matchId = new ObjectId($matchId);
-        $userId = isset($_SESSION['userId']) ? $_SESSION['userId'] : '';
 
-        $filter = ['_id' => $matchId, 'userId' => $userId];
+        $filter = ['_id' => $matchId];
         $find_match = $matchCollection->findOne($filter);
 
         if ($find_match) {
-            $match_status = isset($find_match['matchStatus']) ? $find_match['matchStatus'] : '';
-            if ($match_status == "startInning") {
+            if($find_match['userId'] == $_SESSION['userId']){
+                $match_status = isset($find_match['matchStatus']) ? $find_match['matchStatus'] : '';
+                if ($match_status == "startInning") {
+                    $response = array(
+                        'status_code' => 202,
+                    );
+                } else {
+                    $teamA = get_team_data($find_match['teamA'], $teamCollection);
+                    $teamB =  get_team_data($find_match['teamB'], $teamCollection);
+                    $teamA_selected_players = getSelecedPlayer($find_match['teamAPlayers'], $userCollection);
+                    $teamB_selected_players = getSelecedPlayer($find_match['teamBPlayers'], $userCollection);
+    
+                    $inning_data = [
+                        'teamA' => $teamA,
+                        'teamB' => $teamB,
+                        'teamAPlayer' => $teamA_selected_players,
+                        'teamBPlayer' => $teamB_selected_players
+                    ];
+                    $response = array(
+                        'status_code' => 200,
+                        'inningData' => $inning_data
+                    );
+                }
+            }
+            else{
                 $response = array(
-                    'status_code' => 202,
-                );
-            } else {
-                $teamA = get_team_data($find_match['teamA'], $teamCollection);
-                $teamB =  get_team_data($find_match['teamB'], $teamCollection);
-                $teamA_selected_players = getSelecedPlayer($find_match['teamAPlayers'], $userCollection);
-                $teamB_selected_players = getSelecedPlayer($find_match['teamBPlayers'], $userCollection);
-
-                $inning_data = [
-                    'teamA' => $teamA,
-                    'teamB' => $teamB,
-                    'teamAPlayer' => $teamA_selected_players,
-                    'teamBPlayer' => $teamB_selected_players
-                ];
-                $response = array(
-                    'status_code' => 200,
-                    'inningData' => $inning_data
+                    'status_code' => 401,
                 );
             }
         } else {
             $response = array(
-                'status_code' => 500,
+                'status_code' => 404,
                 'message' => "match not found"
             );
         }

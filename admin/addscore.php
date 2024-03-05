@@ -1,498 +1,276 @@
 <?php
+session_start();
 
 require '../partials/mongodbconnect.php';
 
+use MongoDB\BSON\ObjectId;
 
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
-header("content-type: application/json");
-
-$matchCollection = $database->matchs;
-
-$data = json_decode(file_get_contents('php://input'),true);
-
-$matchId = $data['matchId'];
-$batsmanId = $data['batsmanId'];
-$bowlerId = $data['bowlerId'];
-$scoreInput = $data['score_inuput'];
-$ball_status = $data['ball_status'];
-
-$response = []; 
-
-// $response = array(
-//     'status_code' => '200',
-//     'matchId' => $matchId,
-//     'batsMan' => $batsmanId,
-//     'bowlerId' => $bowlerId,
-//     'score_inuput' => $scoreInput,
-//     'status' => $ball_status
-// );
-
-$playerFilter = [
-    '_id' => new MongoDB\BSON\ObjectId($matchId),
+$allowedOrigins = [
+    'https://cricscorers-15aec.web.app',
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'http://192.168.1.15:5173/',
 ];
 
-$check_player = $matchCollection->findOne($playerFilter);
+$origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
 
-if($check_player)
-{
-    // $response = [
-    //     'status_code' => '200',
-    //     'message' => $check_player,
-    // ];
-    $batsmanFound = false;
-    $oldScore = $check_player['team1_score'];
-    $oldteam2Score = $check_player['team2_score'];
-    $oldover = $check_player['team1_over'];
-    $oldteam2over = $check_player['team2_over'];
-
-    foreach($check_player['team_1'] as &$batsman)
-    {
-        if($batsman['_id'] == $batsmanId)
-        {
-
-            if($scoreInput == "4" && $ball_status == "")
-            {
-                $batsman['bat_liveRun'] += $scoreInput;
-                $batsman['bat_4'] ++;
-                $batsman['bat_ball']++;
-                $striker = $batsmanId;
-                $non_striker =$check_player['non_striker'];
-            }
-            elseif($scoreInput == "6")
-            {
-                $batsman['bat_liveRun'] += $scoreInput;
-                $batsman['bat_6'] ++;
-                $batsman['bat_ball']++;
-                $striker = $batsmanId;
-                $non_striker =$check_player['non_striker'];
-            }
-            elseif($scoreInput == "1" && $ball_status == "")
-            {
-                $batsman['bat_liveRun'] += $scoreInput;
-                $batsman['bat_ball'] ++;
-                $striker = $check_player['non_striker'];
-                $non_striker = $batsmanId;
-            }
-            elseif($scoreInput == "3" && $ball_status == "")
-            {
-                $batsman['bat_liveRun'] += $scoreInput;
-                $batsman['bat_ball'] ++;
-                $striker = $check_player['non_striker'];
-                $non_striker = $batsmanId;
-            }
-            elseif($scoreInput == "0")
-            {
-                $batsman['bat_ball'] ++;
-                $striker = $batsmanId;
-                $non_striker = $check_player['non_striker'];
-            }
-            elseif($ball_status == "WD" && $scoreInput)
-            {
-                if($scoreInput == "1")
-                {
-                    $striker = $check_player['non_striker'];
-                    $non_striker = $batsmanId;
-                }
-                elseif($scoreInput == "2")
-                {
-                    $striker = $batsmanId;
-                    $non_striker =$check_player['non_striker'];
-                }
-                elseif($scoreInput == "3")
-                {
-                    $striker = $check_player['non_striker'];
-                    $non_striker = $batsmanId;
-                }
-                else
-                {
-                    $striker = $batsmanId;
-                    $non_striker =$check_player['non_striker'];
-                }
-            }
-            elseif($ball_status == "NB" && $scoreInput)
-            {
-                if($scoreInput == "1" && $scoreInput == "3")
-                {
-                    $striker = $check_player['non_striker'];
-                    $non_striker = $batsmanId;
-                }
-                else
-                {
-                    $striker = $batsmanId;
-                    $non_striker =$check_player['non_striker'];
-                }
-            }
-            elseif($ball_status == "LB" && $scoreInput)
-            {
-                if($scoreInput == "1" && $scoreInput == "3")
-                {
-                    $striker = $check_player['non_striker'];
-                    $non_striker = $batsmanId;
-                }
-                else
-                {
-                    $striker = $batsmanId;
-                    $non_striker =$check_player['non_striker'];
-                }
-            }
-            elseif($ball_status == "BYE" && $scoreInput)
-            {
-                if($scoreInput == "1" && $scoreInput == "3")
-                {
-                    $striker = $check_player['non_striker'];
-                    $non_striker = $batsmanId;
-                }
-                else
-                {
-                    $striker = $batsmanId;
-                    $non_striker =$check_player['non_striker'];
-                }
-            } 
-            else
-            {
-                $batsman['bat_liveRun'] += $scoreInput;
-                $batsman['bat_ball'] ++;
-                $striker = $batsmanId;
-                $non_striker = $check_player['non_striker'];
-            }
-            $batsmanFound = true; 
-        }
-        elseif($batsman['_id'] == $bowlerId)
-        {
-            if($ball_status == "WD")
-            {
-                if($scoreInput == "0")
-                {
-                    $bowler['ball_liveRun'] = $bowler['ball_liveRun'] + 1;
-                    $bowler['ball_wides_bowled'] ++;
-                    $totalteam2Score = $oldteam2Score + 1;
-                }
-                else
-                {
-                    $bowler['ball_liveRun'] = $bowler['ball_liveRun'] + $scoreInput + 1;
-                    $bowler['ball_wides_bowled'] ++;
-                    $totalteam2Score = $oldteam2Score +  $scoreInput + 1;
-                }
-                $totalTeam2over = $oldteam2over;
-            }
-            elseif($ball_status == "NB")
-            {
-                if($scoreInput == "0")
-                {
-                    $bowler['ball_liveRun'] = $bowler['ball_liveRun'] + 1;
-                    $bowler['ball_no_bowl']++;
-                    $totalteam2Score = $oldteam2Score + 1;   
-                }
-                else
-                {
-                    $bowler['ball_liveRun'] = $bowler['ball_liveRun'] + $scoreInput + 1;
-                    $bowler['ball_no_bowl']++;
-                    $totalteam2Score = $oldteam2Score + $scoreInput + 1;
-                }
-                $totalTeam2over = $oldteam2over;
-            }
-            elseif($ball_status == "BYE")
-            {
-                if($scoreInput == "0")
-                {
-                    $bowler['ball_liveRun'] = $bowler['ball_liveRun'];
-                    $bowler['bye_run'] += $scoreInput;
-                    $totalteam2Score = $oldteam2Score + 1;   
-                }
-                else
-                {
-                    $bowler['ball_liveRun'] = $bowler['ball_liveRun'] + $scoreInput;
-                    $bowler['bye_run'] += $scoreInput;
-                    $totalteam2Score = $oldteam2Score + $scoreInput + 1;
-                }
-                $totalteam2Score = $oldteam2over;
-            }
-            else
-            {
-                $bowler['ball_liveRun'] += $scoreInput;
-                if($bowler['ball_over']  * 10 % 10 < 5)
-                {
-                    $bowler['ball_over'] = round($bowler['ball_over'] + 0.1, 1);
-                    $totalTeam2over = round($oldteam2over + 0.1,1);
-                }
-                else
-                {
-                    $bowler['ball_over'] =  round($bowler['ball_over'] + 0.5, 1);
-                    $totalteam2Score = round($oldteam2over + 0.5,1);
-                    if($scoreInput == "1" || $scoreInput == "3")
-                    {
-                        $striker = $batsmanId;
-                        $non_striker = $check_player['non_striker'];
-                    }
-                    else
-                    {
-                        $striker = $check_player['non_striker'];
-                        $non_striker = $batsmanId;
-                    }
-                }
-            }
-            $bowlerFound = true;    
-        }
-        $totalteam1Score = $oldScore + $scoreInput; 
-    }
-
-    $bowlerFound = false;
-    foreach($check_player['team_2'] as &$bowler)
-    {
-        if($bowler['_id'] == $batsmanId)
-        {
-
-            if($scoreInput == "4" && $ball_status == "")
-            {
-                $batsman['bat_liveRun'] += $scoreInput;
-                $batsman['bat_4'] ++;
-                $batsman['bat_ball']++;
-                $striker = $batsmanId;
-                $non_striker =$check_player['non_striker'];
-            }
-            elseif($scoreInput == "6")
-            {
-                $batsman['bat_liveRun'] += $scoreInput;
-                $batsman['bat_6'] ++;
-                $batsman['bat_ball']++;
-                $striker = $batsmanId;
-                $non_striker =$check_player['non_striker'];
-            }
-            elseif($scoreInput == "1" && $ball_status == "")
-            {
-                $batsman['bat_liveRun'] += $scoreInput;
-                $batsman['bat_ball'] ++;
-                $striker = $check_player['non_striker'];
-                $non_striker = $batsmanId;
-            }
-            elseif($scoreInput == "3" && $ball_status == "")
-            {
-                $batsman['bat_liveRun'] += $scoreInput;
-                $batsman['bat_ball'] ++;
-                $striker = $check_player['non_striker'];
-                $non_striker = $batsmanId;
-            }
-            elseif($scoreInput == "0")
-            {
-                $batsman['bat_ball'] ++;
-                $striker = $batsmanId;
-                $non_striker = $check_player['non_striker'];
-            }
-            elseif($ball_status == "WD" && $scoreInput)
-            {
-                if($scoreInput == "1")
-                {
-                    $striker = $check_player['non_striker'];
-                    $non_striker = $batsmanId;
-                }
-                elseif($scoreInput == "2")
-                {
-                    $striker = $batsmanId;
-                    $non_striker =$check_player['non_striker'];
-                }
-                elseif($scoreInput == "3")
-                {
-                    $striker = $check_player['non_striker'];
-                    $non_striker = $batsmanId;
-                }
-                else
-                {
-                    $striker = $batsmanId;
-                    $non_striker =$check_player['non_striker'];
-                }
-            }
-            elseif($ball_status == "NB" && $scoreInput)
-            {
-                if($scoreInput == "1" && $scoreInput == "3")
-                {
-                    $striker = $check_player['non_striker'];
-                    $non_striker = $batsmanId;
-                }
-                else
-                {
-                    $striker = $batsmanId;
-                    $non_striker =$check_player['non_striker'];
-                }
-            }
-            elseif($ball_status == "LB" && $scoreInput)
-            {
-                if($scoreInput == "1" && $scoreInput == "3")
-                {
-                    $striker = $check_player['non_striker'];
-                    $non_striker = $batsmanId;
-                }
-                else
-                {
-                    $striker = $batsmanId;
-                    $non_striker =$check_player['non_striker'];
-                }
-            }
-            elseif($ball_status == "BYE" && $scoreInput)
-            {
-                if($scoreInput == "1" && $scoreInput == "3")
-                {
-                    $striker = $check_player['non_striker'];
-                    $non_striker = $batsmanId;
-                }
-                else
-                {
-                    $striker = $batsmanId;
-                    $non_striker =$check_player['non_striker'];
-                }
-            } 
-            else
-            {
-                $batsman['bat_liveRun'] += $scoreInput;
-                $batsman['bat_ball'] ++;
-                $striker = $batsmanId;
-                $non_striker = $check_player['non_striker'];
-            }
-            $batsmanFound = true; 
-
-        }
-        elseif($bowler['_id'] == $bowlerId)
-        {
-            if($ball_status == "WD")
-            {
-                if($scoreInput == "0")
-                {
-                    $bowler['ball_liveRun'] = $bowler['ball_liveRun'] + 1;
-                    $bowler['ball_wides_bowled'] ++;
-                    $totalteam1Score = $oldScore + 1;
-                }
-                else
-                {
-                    $bowler['ball_liveRun'] = $bowler['ball_liveRun'] + $scoreInput + 1;
-                    $bowler['ball_wides_bowled'] ++;
-                    $totalteam1Score = $oldScore +  $scoreInput + 1;
-                }
-                $totalTeam1over = $oldover;
-            }
-            elseif($ball_status == "NB")
-            {
-                if($scoreInput == "0")
-                {
-                    $bowler['ball_liveRun'] = $bowler['ball_liveRun'] + 1;
-                    $bowler['ball_no_bowl']++;
-                    $totalteam1Score = $oldScore + 1;   
-                }
-                else
-                {
-                    $bowler['ball_liveRun'] = $bowler['ball_liveRun'] + $scoreInput + 1;
-                    $bowler['ball_no_bowl']++;
-                    $totalteam1Score = $oldScore + $scoreInput + 1;
-                }
-                $totalTeam1over = $oldover;
-            }
-            elseif($ball_status == "BYE" || $ball_status == "LB")
-            {
-                if($scoreInput == "0")
-                {
-                    $bowler['ball_liveRun'] = $bowler['ball_liveRun'];
-                    $bowler['bye_run'] += $scoreInput;
-                    $totalteam1Score = $oldScore + 1;   
-                }
-                else
-                {
-                    $bowler['ball_liveRun'] = $bowler['ball_liveRun'] + $scoreInput;
-                    $bowler['bye_run'] += $scoreInput;
-                    $totalteam1Score = $oldScore + $scoreInput;
-                }
-                $totalTeam1over = $oldover;
-                if($bowler['ball_over']  * 10 % 10 < 5)
-                {
-                    $bowler['ball_over'] = round($bowler['ball_over'] + 0.1, 1);
-                    $totalTeam1over = round($oldover + 0.1,1);
-                }
-                else
-                {
-                    $bowler['ball_over'] =  round($bowler['ball_over'] + 0.5, 1);
-                    $totalTeam1over = round($oldover + 0.5,1);
-                    if($scoreInput == "1" || $scoreInput == "3")
-                    {
-                        $striker = $batsmanId;
-                        $non_striker = $check_player['non_striker'];
-                    }
-                    else
-                    {
-                        $striker = $check_player['non_striker'];
-                        $non_striker = $batsmanId;
-                    }
-                }
-            }
-            else
-            {
-                $bowler['ball_liveRun'] += $scoreInput;
-                if($bowler['ball_over']  * 10 % 10 < 5)
-                {
-                    $bowler['ball_over'] = round($bowler['ball_over'] + 0.1, 1);
-                    $totalTeam1over = round($oldover + 0.1,1);
-                }
-                else
-                {
-                    $bowler['ball_over'] =  round($bowler['ball_over'] + 0.5, 1);
-                    $totalTeam1over = round($oldover + 0.5,1);
-                    if($scoreInput == "1" || $scoreInput == "3")
-                    {
-                        $striker = $batsmanId;
-                        $non_striker = $check_player['non_striker'];
-                    }
-                    else
-                    {
-                        $striker = $check_player['non_striker'];
-                        $non_striker = $batsmanId;
-                    }
-                }
-            }
-            $bowlerFound = true;    
-        }
-        $totalteam2Score = $oldteam2Score + $scoreInput;
-    }
-
-    if($batsmanFound && $bowlerFound)
-    {
-        $response['status_code'] = '200';
-        $response['batsman'] = $batsman;
-        $response['bowler'] = $bowler;
-        $response['over'] = $totalTeam1over;
-        $response['message'] = 'Live run updated for batsman and bowler';
-    } 
-    else 
-    {
-        $response['status_code'] = '404';
-        $response['message'] = 'Player(s) not found';
-    }
-
-    $document = [
-        '$set' => [
-            'team_1' => $check_player['team_1'],
-            'team_2' => $check_player['team_2'],
-            'team1_score' => $totalteam1Score,
-            'striker' => $striker,
-            'non_striker' => $non_striker,
-            'team1_over' => $totalTeam1over,
-        ]
-    ];
-
-    $updateRole = $matchCollection->updateOne(
-        ['_id' => new MongoDB\BSON\ObjectId($matchId)],
-        $document);
-
-    if($updateRole->getModifiedCount() <= 0)
-    {
-        $response['status_code'] = '400';
-        $response['message'] = 'Player role update failed';
-    }
+if (in_array($origin, $allowedOrigins)) {
+    header('Access-Control-Allow-Origin: ' . $origin);
 }
-else
+header('Access-Control-Allow-Credentials: true');
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+header("Access-Control-Allow-Headers:  X-Requested-With, Origin, Content-Type, X-CSRF-Token, Accept");
+header("content-type: application/json");
+header("ngrok-skip-browser-warning: 1");
+
+function player_data($data)
 {
+    $final_data = [
+        '_id' => new ObjectId($data['player_id']),
+        'userName' => $data['userName'],
+    ];
+    if ($data['playerStatus'] == "bowl") {
+        $final_data['bowling'] = $data['bowling'];
+    } else {
+        $final_data['batting'] = $data['batting'];
+    }
+
+    return $final_data;
+}
+
+$data = json_decode(file_get_contents('php://input'), true);
+if (!isset($_SESSION['userId'])) {
     $response = [
-        'status_code' => '404',
-        'message' => 'record not found'
+        'status_code' => 400,
+        'message' => 'your session is expire'
     ];
+} else {
+    $matchId = isset($data['matchId']) ? $data['matchId'] : '';
+    $batsmanId = isset($data['striker']) ? $data['striker'] : '';
+    $bowlerId = isset($data['bowler']) ? $data['bowler'] : '';
+    $nonStriker = isset($data['nonStriker']) ? $data['nonStriker'] : '';
+    $runs = isset($data['runs']) ? $data['runs'] : '';
+    $isBoundary = isset($data['isBoundary']) ? $data['isBoundary'] : '';
+    $ball_status = isset($data['ballNo']) ? $data['ballNo'] : '';
+    $total_run = isset($data['totalRuns']) ? $data['totalRuns'] : '';
+    $extra_run = isset($data['extra_run']) ? $data['extra_run'] : '';
+    $countBall = isset($data['countBall']) ? $data['countBall'] : '';
+    $deliveryType = isset($data['deliveryType']) ? $data['deliveryType'] : '';
+
+    // $response = array(
+    //     'status_code' => '200',
+    //     'data' => $data
+    // );
+    if (!preg_match('/^[0-9a-fA-F]{24}$/', $matchId)) {
+        $response = [
+            'status_code' => 500,
+            'message' => 'Invalid matchId format'
+        ];
+    } else {
+        $matchId = new ObjectId($matchId);
+        $filter = ['_id' => $matchId];
+        $event = "startInning";
+        $check_find = $matchCollection->findOne($filter);
+        if ($check_find) {
+            if ($check_find['userId'] == $_SESSION['userId']) {
+                foreach ($check_find['teamAPlayers']['players'] as $key => $players) {
+                    if ($players['player_id'] == $batsmanId) {
+                        $check_find['teamAPlayers']['players'][$key]['batting']['runs'] += $runs;
+                        if($countBall == "true"){
+                            $check_find['teamAPlayers']['players'][$key]['batting']['ball']++;
+                        }
+
+                        if($isBoundary == "true" && $runs == "4"){
+                            $check_find['teamAPlayers']['players'][$key]['batting']['four']++;
+                        }elseif($isBoundary == "true" && $runs == "6"){
+                            $check_find['teamAPlayers']['players'][$key]['batting']['six']++;
+                        }
+
+                        $players['playerStatus'] = 'bat';
+                        $striker = $players;
+                    } elseif ($players['player_id'] == $nonStriker) {
+                        $players['playerStatus'] = 'bat';
+                        $non_striker = $players;
+                    } elseif ($players['player_id'] == $bowlerId) {
+                        $check_find['teamAPlayers']['players'][$key]['bowling']['runs'] += $runs;
+                        if ($check_find['teamAPlayers']['players'][$key]['bowling']['over'] * 10 % 10 < 5) {
+                            $check_find['teamAPlayers']['players'][$key]['bowling']['over'] = round($check_find['teamAPlayers']['players'][$key]['bowling']['over'] + 0.1, 1);
+                        } else {
+                            $check_find['teamAlayers']['players'][$key]['bowling']['over'] = round($check_find['teamAPlayers']['players'][$key]['bowling']['over'] + 0.5, 1);
+                        }
+                        $players['playerStatus'] = 'bowl';
+                        $bowler = $players;
+                    }
+                }
+
+                foreach ($check_find['teamBPlayers']['players'] as $key => $players) {
+                    if ($players['player_id'] == $batsmanId) {
+                        $check_find['teamBPlayers']['players'][$key]['batting']['runs'] += $runs;
+                        $check_find['teamBPlayers']['players'][$key]['batting']['ball']++;
+                        $striker = $players;
+                    } elseif ($players['player_id'] == $nonStriker) {
+                        $non_striker = $players;
+                    } elseif ($players['player_id'] == $bowlerId) {
+                        if ($deliveryType == 'wideBall') {
+                            $check_find['teamBPlayers']['players'][$key]['bowling']['runs'] += intval($total_run);
+                            $check_find['teamBPlayers']['players'][$key]['bowling']['wideBall']++;
+                        } elseif ($deliveryType == 'noBall') {
+                            $check_find['teamBPlayers']['players'][$key]['bowling']['runs'] += intval($total_run);
+                            $check_find['teamBPlayers']['players'][$key]['bowling']['noBall']++;
+                        } elseif($isBoundary == "true" && $runs == "4"){
+                            $check_find['teamBPlayers']['players'][$key]['bowling']['four']++;
+                        }elseif($isBoundary == "true" && $runs == "6"){
+                            $check_find['teamBPlayers']['players'][$key]['bowling']['six']++;
+                        } else {
+                            $check_find['teamBPlayers']['players'][$key]['bowling']['runs'] += $runs;
+                        }
+
+                        if ($countBall == 'true') {
+                            if ($check_find['teamBPlayers']['players'][$key]['bowling']['over'] * 10 % 10 < 5) {
+                                $check_find['teamBPlayers']['players'][$key]['bowling']['over'] = round($check_find['teamBPlayers']['players'][$key]['bowling']['over'] + 0.1, 1);
+                            } else {
+                                $check_find['teamBPlayers']['players'][$key]['bowling']['over'] = round($check_find['teamBPlayers']['players'][$key]['bowling']['over'] + 0.5, 1);
+                            }
+                        }
+                        $players['playerStatus'] = 'bowl';
+                        $bowler = $players;
+                    }
+                }
+
+
+                if ($runs % 2 != 0) {
+                    $check_find['striker'] = $nonStriker;
+                    $check_find['nonStriker'] = $batsmanId;
+                    $final_stirker = player_data($non_striker);
+                    $final_non_striker = player_data($striker);
+                } else {
+                    $check_find['striker'] = $batsmanId;
+                    $check_find['nonStriker'] = $nonStriker;
+                    $final_stirker = player_data($striker);
+                    $final_non_striker = player_data($non_striker);
+                }
+
+                if ($check_find['inning'] == "1") {
+                    $check_find['firstinning']['totalScore'] += intval($total_run);
+                    if ($countBall == 'true') {
+                        if ($check_find['firstinning']['currentOver'] * 10 % 10 < 5) {
+                            $check_find['firstinning']['currentOver'] = round($check_find['firstinning']['currentOver'] + 0.1, 1);
+                        } else {
+                            $check_find['firstinning']['currentOver'] = round($check_find['firstinning']['currentOver'] + 0.5, 1);
+                            $event = "overComplete";
+                            if ($runs % 2 == 0) {
+                                $check_find['striker'] = $nonStriker;
+                                $check_find['nonStriker'] = $batsmanId;
+                                $final_stirker = player_data($non_striker);
+                                $final_non_striker = player_data($striker);
+                            } else {
+                                $check_find['striker'] = $batsmanId;
+                                $check_find['nonStriker'] = $nonStriker;
+                                $final_stirker = player_data($striker);
+                                $final_non_striker = player_data($non_striker);
+                            }
+                        }
+                    }
+
+                    if($check_find['firstinning']['totalScore'] == $check_find['noOfOvers']){
+                        $event = "inning complete";
+                    }
+                  
+                    // if($check_find['noOfOver'] == 0){
+                    //     $over = '1';
+                    // }
+                    // else{
+                    //     $over = $check_find['noOfOver'];
+                    // }
+
+                    if($deliveryType == "wideBall"){
+                        $check_find['firstinning']['extra']['W']++;
+                    }
+                    elseif($deliveryType == "noBall"){
+                        $check_find['firstinning']['extra']['NB']++;
+                    }
+                    elseif($deliveryType == "bye"){
+                        $check_find['firstinning']['extra']['by']++;
+                    }
+                    elseif($deliveryType == "lagBye"){
+                        $check_find['firstinning']['extra']['LB']++;
+                    }
+                    $inning = [
+                        'totalScore' => $check_find['firstinning']['totalScore'],
+                        'wicket' => $check_find['firstinning']['wicket'],
+                        'currentOver' => $check_find['firstinning']['currentOver'],
+                    ];
+                } else {
+                    $check_find['secondinning']['totalScore'] += intval($total_run);
+                    if ($check_find['secondinning']['currentOver'] * 10 % 10 < 5) {
+                        $check_find['secondinning']['currentOver'] = round($check_find['secondinning']['currentOver'] + 0.1, 1);
+                    } else {
+                        $check_find['secondinning']['currentOver'] = round($check_find['secondinning']['currentOver'] + 0.5, 1);
+                        $event = "overComplete";
+                        if ($runs % 2 == 0) {
+                            $check_find['striker'] = $nonStriker;
+                            $check_find['nonStriker'] = $batsmanId;
+                            $final_stirker = player_data($non_striker);
+                            $final_non_striker = player_data($striker);
+                        } else {
+                            $check_find['striker'] = $batsmanId;
+                            $check_find['nonStriker'] = $nonStriker;
+                            $final_stirker = player_data($striker);
+                            $final_non_striker = player_data($non_striker);
+                        }
+                    }
+
+                    if($check_find['secondinning']['totalScore'] == $check_find['noOfOvers']){
+                        $event = "inning complete";
+                    }
+                    else{
+                        $event = "start inning";
+                    }
+
+                    if($deliveryType == "wideBall"){
+                        $check_find['secondinning']['extra']['W']++;
+                    }
+                    elseif($deliveryType == "noBall"){
+                        $check_find['secondinning']['extra']['NB']++;
+                    }
+                    elseif($deliveryType == "bye"){
+                        $check_find['secondinning']['extra']['by']++;
+                    }
+                    elseif($deliveryType == "lagBye"){
+                        $check_find['secondinning']['extra']['LB']++;
+                    }
+                    $inning = [ 
+                        'totalScore' => $check_find['secondinning']['totalScore'],
+                        'wicket' => $check_find['secondinning']['wicket'],
+                        'currentOver' => $check_find['secondinning']['currentOver'],
+                    ];
+                }
+
+                $final_bowler = player_data($bowler);
+
+                $update_score = $matchCollection->replaceOne($filter, $check_find);
+
+                $response = array(
+                    'status_code' => 200,
+                    'striker' => $final_stirker,
+                    'nonStriker' => $final_non_striker,
+                    'bowler' => $final_bowler,
+                    'event' => $event,
+                    'score' => $inning,
+                );
+            } else {
+                $response = array(
+                    'status_code' => 401
+                );
+            }
+        } else {
+            $response = array(
+                'status_code' => 404,
+                'message' => "match not found"
+            );
+        }
+    }
 }
+
 
 echo json_encode($response);
-?>

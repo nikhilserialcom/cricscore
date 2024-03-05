@@ -3,11 +3,12 @@ session_start();
 require 'partials/mongodbconnect.php';
 
 use MongoDB\BSON\ObjectId;
+
 $allowedOrigins = [
     'https://cricscorers-15aec.web.app',
     'http://localhost:5173',
     'http://localhost:5174',
-    'http://192.168.1.23:5173',
+    'http://192.168.1.15:5173/',
 ];
 
 $origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
@@ -41,7 +42,7 @@ if (!isset($_SESSION['userId'])) {
     $matchDate = isset($data['dateTime']) ? $data['dateTime'] : '';
     $powerPlay = isset($data['powerplay']) ? $data['powerplay'] : '';
     $ballType = isset($data['ballType']) ? $data['ballType'] : '';
-    $patchType = isset($data['pitchType']) ? $data['pitchType'] : ''; 
+    $patchType = isset($data['pitchType']) ? $data['pitchType'] : '';
     $teamA_player = isset($data['teamAPlayers']) ? $data['teamAPlayers'] : '';
     $teamB_player = isset($data['teamBPlayers']) ? $data['teamBPlayers'] : '';
     $officials = isset($data['officials']) ? $data['officials'] : '';
@@ -55,22 +56,32 @@ if (!isset($_SESSION['userId'])) {
         $findName = $userCollection->findOne($filterPlayer);
         $addPlayer = [
             'player_id' => $teamA,
-            'playerName' => $findName['userName'],
-            'bat_4' => "0",
-            'bat_6' => "0",
-            'bat_liveRun' => "0",
-            'bat_ball' => "0",
-            'bat_strike_rate' => "0",
-            'ball_over' => "0",
-            'ball_maiden' => "0",
-            'ball_wicket' => "0",
-            'ball_liveRun' => "0",
-            'ball_no_bowl' => "0",
-            'ball_wides_bowled' => "0",
-            'ball_economy' => "0",
-            'run_saved' => "0",
-            'run_missed' => "0",
-            "player_role" => ""
+            'userName' => $findName['userName'],
+            'batting' => [
+                'runs' => 0,
+                'ball' => 0,
+                'four' => 0,
+                'six' => 0,
+                'strikeRate' => 0,
+                'batStatus' => "not out"
+            ],
+            'bowling' => [
+                'runs' => 0,
+                'over' => 0,
+                'wicket' => 0,
+                'four' => 0,
+                'six' => 0,
+                'economy' => 0,
+                'maidenOver' => 0,
+                'wideBall' => 0,
+                'noBall' => 0,
+            ],
+            'filder' => [
+                'misRun' => 0,
+                'saveRun' => 0,
+                'dropCatch' => 0,
+                'catch' => 0,
+            ]
         ];
 
         $finalTeamA[] = $addPlayer;
@@ -81,22 +92,34 @@ if (!isset($_SESSION['userId'])) {
         $findName = $userCollection->findOne($filterPlayer);
         $addPlayer = [
             'player_id' => $teamB,
-            'playerName' => $findName['userName'],
-            'bat_4' => "0",
-            'bat_6' => "0",
-            'bat_liveRun' => "0",
-            'bat_ball' => "0",
-            'bat_strike_rate' => "0",
-            'ball_over' => "0",
-            'ball_maiden' => "0",
-            'ball_wicket' => "0",
-            'ball_liveRun' => "0",
-            'ball_no_bowl' => "0",
-            'ball_wides_bowled' => "0",
-            'ball_economy' => "0",
-            'run_saved' => "0",
-            'run_missed' => "0",
-            "player_role" => ""
+            'userName' => $findName['userName'],
+            'batting' => [
+                'runs' => 0,
+                'ball' => 0,
+                'four' => 0,
+                'six' => 0,
+                'strikeRate' => 0,
+                'batStatus' => "not out"
+            ],
+            'bowling' => [
+                'runs' => 0,
+                'over' => 0,
+                'wicket' => 0,
+                'economy' => 0,
+                'maidenOver' => 0,
+                'wideBall' => 0,
+                'noBall' => 0,
+                'extra' => [
+                    'W' => 0,
+                    'NB' => 0,
+                ]
+            ],
+            'filder' => [
+                'misRun' => 0,
+                'saveRun' => 0,
+                'dropCatch' => 0,
+                'catch' => 0,
+            ]
         ];
 
         $finalTeamB[] = $addPlayer;
@@ -138,7 +161,7 @@ if (!isset($_SESSION['userId'])) {
             'roles' => $teamA_player['roles']
         ],
         'teamBPlayers' => [
-            'players' =>$finalTeamB,
+            'players' => $finalTeamB,
             'roles' => $teamB_player['roles']
         ],
         'officials' => $officials,
@@ -149,7 +172,7 @@ if (!isset($_SESSION['userId'])) {
     if ($createMatch) {
         $response = [
             'status_code' => "200",
-            'matchId' => $createMatch -> getInsertedId(),
+            'matchId' => $createMatch->getInsertedId(),
             'message' => "match create successfully !"
         ];
     } else {
