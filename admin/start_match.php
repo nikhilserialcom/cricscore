@@ -72,7 +72,11 @@ if (!isset($_SESSION['userId'])) {
                     'NB' => 0,
                     'W' => 0
                 ],
-                'over' => array() 
+                'over' => array([
+                    'overNumber' => 0,
+                    'bowler' => array($bowler),
+                    'balls' => []
+                ]) 
             ];
         }
 

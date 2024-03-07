@@ -76,13 +76,13 @@ if (!isset($_SESSION['userId'])) {
                 foreach ($check_find['teamAPlayers']['players'] as $key => $players) {
                     if ($players['player_id'] == $batsmanId) {
                         $check_find['teamAPlayers']['players'][$key]['batting']['runs'] += $runs;
-                        if($countBall == "true"){
+                        if ($countBall == "true") {
                             $check_find['teamAPlayers']['players'][$key]['batting']['ball']++;
                         }
 
-                        if($isBoundary == "true" && $runs == "4"){
+                        if ($isBoundary == "true" && $runs == "4") {
                             $check_find['teamAPlayers']['players'][$key]['batting']['four']++;
-                        }elseif($isBoundary == "true" && $runs == "6"){
+                        } elseif ($isBoundary == "true" && $runs == "6") {
                             $check_find['teamAPlayers']['players'][$key]['batting']['six']++;
                         }
 
@@ -117,9 +117,9 @@ if (!isset($_SESSION['userId'])) {
                         } elseif ($deliveryType == 'noBall') {
                             $check_find['teamBPlayers']['players'][$key]['bowling']['runs'] += intval($total_run);
                             $check_find['teamBPlayers']['players'][$key]['bowling']['noBall']++;
-                        } elseif($isBoundary == "true" && $runs == "4"){
+                        } elseif ($isBoundary == "true" && $runs == "4") {
                             $check_find['teamBPlayers']['players'][$key]['bowling']['four']++;
-                        }elseif($isBoundary == "true" && $runs == "6"){
+                        } elseif ($isBoundary == "true" && $runs == "6") {
                             $check_find['teamBPlayers']['players'][$key]['bowling']['six']++;
                         } else {
                             $check_find['teamBPlayers']['players'][$key]['bowling']['runs'] += $runs;
@@ -172,27 +172,23 @@ if (!isset($_SESSION['userId'])) {
                         }
                     }
 
-                    if($check_find['firstinning']['totalScore'] == $check_find['noOfOvers']){
+                    if ($check_find['firstinning']['totalScore'] == $check_find['noOfOvers']) {
                         $event = "inning complete";
                     }
-                  
-                    // if($check_find['noOfOver'] == 0){
-                    //     $over = '1';
-                    // }
-                    // else{
-                    //     $over = $check_find['noOfOver'];
-                    // }
 
-                    if($deliveryType == "wideBall"){
+                    foreach($check_find['firstinning']['over'] as $over){
+                        if($over['overNumber'] == $check_find['noOfOvers']){
+                            $over_data = $over;
+                        }
+                    }
+
+                    if ($deliveryType == "wideBall") {
                         $check_find['firstinning']['extra']['W']++;
-                    }
-                    elseif($deliveryType == "noBall"){
+                    } elseif ($deliveryType == "noBall") {
                         $check_find['firstinning']['extra']['NB']++;
-                    }
-                    elseif($deliveryType == "bye"){
+                    } elseif ($deliveryType == "bye") {
                         $check_find['firstinning']['extra']['by']++;
-                    }
-                    elseif($deliveryType == "lagBye"){
+                    } elseif ($deliveryType == "lagBye") {
                         $check_find['firstinning']['extra']['LB']++;
                     }
                     $inning = [
@@ -220,26 +216,22 @@ if (!isset($_SESSION['userId'])) {
                         }
                     }
 
-                    if($check_find['secondinning']['totalScore'] == $check_find['noOfOvers']){
+                    if ($check_find['secondinning']['totalScore'] == $check_find['noOfOvers']) {
                         $event = "inning complete";
-                    }
-                    else{
+                    } else {
                         $event = "start inning";
                     }
 
-                    if($deliveryType == "wideBall"){
+                    if ($deliveryType == "wideBall") {
                         $check_find['secondinning']['extra']['W']++;
-                    }
-                    elseif($deliveryType == "noBall"){
+                    } elseif ($deliveryType == "noBall") {
                         $check_find['secondinning']['extra']['NB']++;
-                    }
-                    elseif($deliveryType == "bye"){
+                    } elseif ($deliveryType == "bye") {
                         $check_find['secondinning']['extra']['by']++;
-                    }
-                    elseif($deliveryType == "lagBye"){
+                    } elseif ($deliveryType == "lagBye") {
                         $check_find['secondinning']['extra']['LB']++;
                     }
-                    $inning = [ 
+                    $inning = [
                         'totalScore' => $check_find['secondinning']['totalScore'],
                         'wicket' => $check_find['secondinning']['wicket'],
                         'currentOver' => $check_find['secondinning']['currentOver'],
@@ -257,6 +249,7 @@ if (!isset($_SESSION['userId'])) {
                     'bowler' => $final_bowler,
                     'event' => $event,
                     'score' => $inning,
+                    'over' => $over_data
                 );
             } else {
                 $response = array(

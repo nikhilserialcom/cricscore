@@ -15,6 +15,7 @@ $matchCollection = $database->matchs;
 $teamCollection = $database->teams;
 $playerCollection = $database->players;
 $groundCollection = $database->cricket_grounds;
+$tournamentCollection = $database->tournaments;
 
 
 // if ($countryNameCollection) {
