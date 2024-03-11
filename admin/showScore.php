@@ -107,16 +107,6 @@ if (!isset($_SESSION['userId'])) {
                     'batingTeam' => $checkmatch['currentBatting'],
                 ];
 
-                $lastOvers = [
-                    [
-                        'overNumber' => 1,
-                        'balls' => [
-                            ['ballNo' => 1, 'runs' => 0],
-                            ['ballNo' => 2, 'runs' => 2],
-                        ]
-                    ]
-                ];
-
                 foreach ($checkmatch['teamAPlayers']['players'] as $player) {
                     $final_teamA_players[] = player_info($player['player_id']);
                     if ($checkmatch['striker'] == $player['player_id']) {
@@ -153,6 +143,19 @@ if (!isset($_SESSION['userId'])) {
                         $bowler_players = $final_teamA_players;
                         $wicketKeeper = player_info($checkmatch['teamAPlayers']['roles']['wk']);
                     }
+
+                    foreach($checkmatch['firstinning']['over'] as $over){
+                        if($over['overNumber'] == intval($checkmatch['firstinning']['currentOver'])){
+                            $over_data = $over['balls'];
+                        }
+                    }
+
+                    if(!empty($over_data)){
+                        $lastOvers = $over_data;
+                    }
+                    else{
+                        $lastOvers = "over complete";
+                    }
                     
                     $score = [
                         'totalScore' => isset($checkmatch['firstinning']) ?  $checkmatch['firstinning']['totalScore'] : 0,
@@ -183,6 +186,18 @@ if (!isset($_SESSION['userId'])) {
                         $wicketKeeper = player_info($checkmatch['teamAPlayers']['roles']['wk']);
                     }
                     
+                    foreach($checkmatch['secondinning']['over'] as $over){
+                        if($over['overNumber'] == intval($checkmatch['secondinning']['currentOver'])){
+                            $over_data = $over['balls'];
+                        }
+                    }
+
+                    if($over_data){
+                        $lastOvers = $over_data;
+                    }
+                    else{
+                        $lastOvers = "over complete";
+                    }
                     $score = [
                         'totalScore' => isset($checkmatch['secondinning']) ? $checkmatch['secondinning']['total_score'] : 0,
                         'wicket' => isset($checkmatch['secondinning']) ? $checkmatch['secondinning']['wicket'] : 0,

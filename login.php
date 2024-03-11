@@ -51,12 +51,6 @@ $country = $data['country'];
 $mobileNumber = $data['mobileNumber'];
 // $otp = rand(1111, 9999);
 $otp = 1234;
-// $response = array(
-//     'countryName' => $country,
-//     'mobileNumber' => $mobileNumber,
-// );
-
-// echo json_encode($response,JSON_PRETTY_PRINT);
 
 $mobileFilter = ['mobileNumber' => $mobileNumber];
 $check_mobileNumber = $userCollection->findOne($mobileFilter);

@@ -1,6 +1,7 @@
 <?php
 session_start();
 require 'partials/mongodbconnect.php';
+use MongoDB\BSON\ObjectId;
 
 $allowedOrigins = [
     'https://cricscorers-15aec.web.app',
@@ -30,7 +31,12 @@ if (!isset($_SESSION['userId'])) {
 
     $filter = ['userId' => $userId];
     $find_tor = $tournamentCollection->find($filter);
-    $final_data = iterator_to_array($find_tor);
+
+    foreach($find_tor as $tor_data)
+    {
+        $tor_data['ground'] = $groundCollection->findOne(['_id' => new ObjectId($tor_data['ground'])]);
+        $final_data[] = $tor_data;
+    }
 
     if($final_data){
         $response = array(

@@ -22,6 +22,7 @@ header("ngrok-skip-browser-warning: 1");
 
 
 $teamName = isset($_GET['search_input']) ? $_GET['search_input'] : '';
+$members  = isset($_GET['addMembers']) ? $_GET['addMembers'] : '';
 
 // $response = array(
 //     'status_code' => '200',
@@ -51,6 +52,9 @@ foreach ($check_team as $document) {
         'teamName' => $document['teamName'],
         'teamCity' => $document['teamCity']
     ];
+    if($members == "true"){
+        $team_data['member'] = $document['member'];
+    }
 
     $arr_of_obj[] = $team_data;
 }

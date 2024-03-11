@@ -4,6 +4,8 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 $con = new MongoDB\Client('mongodb://localhost:27017');
 
+date_default_timezone_set('Asia/Kolkata');
+
 $database = $con->crick_heros;
 $countryNameCollection = $database->country_name_code;
 $cityNameCollection = $database->city_name; 

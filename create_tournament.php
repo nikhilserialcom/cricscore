@@ -91,7 +91,7 @@ if (!isset($_SESSION['userId'])) {
         'organiserName' => $organiserName,
         'organiserNo' => $organiserNo,
         'ground' => $ground,
-        'address' => $city,
+        'cityName' => $city,
         'allowToContant' => $allowToContact,
         'startDate' => $startDate,
         'endDate' => $endDate,
@@ -100,6 +100,8 @@ if (!isset($_SESSION['userId'])) {
         'ballType' => $ballType,
         'pitchType' => $pitchType,
         'tags' => $tags,
+        'teams' => array(),
+        'createdAt' => date("Y-m-d H:i:s")
     ];
 
     $createTournament = $tournamentCollection->insertOne($torData);
@@ -113,7 +115,7 @@ if (!isset($_SESSION['userId'])) {
     else{
         $response = array(
             'status_code' => "500",
-            'message' => "connection error"
+            'message' => "Failed to connect to server"
         );
     }
 

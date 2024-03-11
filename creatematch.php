@@ -109,6 +109,8 @@ if (!isset($_SESSION['userId'])) {
                 'maidenOver' => 0,
                 'wideBall' => 0,
                 'noBall' => 0,
+                'four' => 0,
+                'six' => 0,
                 'extra' => [
                     'W' => 0,
                     'NB' => 0,
@@ -125,23 +127,14 @@ if (!isset($_SESSION['userId'])) {
         $finalTeamB[] = $addPlayer;
     }
 
-    // $response = array(
-    //     'userId' => $userId,
-    //     'teamA' => $teamA_id,
-    //     'teamB' => $teamB_id,
-    //     'matchTpye' => $matchType,
-    //     'noOfOvers' => $totalOver,
-    //     'noOfOversPerBowler' => $over_per_bowler,
-    //     'cityName' => $cityName,
-    //     'powerplay' => $powerPlay,
-    //     'gruound' => $ground,
-    //     'dateTime' => $matchDate,
-    //     'ballType' => $ballType,
-    //     'pitchType' => $patchType,
-    //     'teamAPlayers' =>  $finalTeamA,
-    //     'teamBPlayers' =>  $finalTeamB,
-    //     'officials' => $officials,
-    // ); 
+    if(!empty($officials)){
+        $final_data = $officials;
+    }
+    else{
+        $final_data = [
+            'scorer' => $_SESSION['userId']
+        ];
+    }
 
     $document = [
         'userId' => $userId,
@@ -164,7 +157,7 @@ if (!isset($_SESSION['userId'])) {
             'players' => $finalTeamB,
             'roles' => $teamB_player['roles']
         ],
-        'officials' => $officials,
+        'officials' => $final_data,
     ];
 
     $createMatch = $matchCollection->insertOne($document);
