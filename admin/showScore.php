@@ -89,7 +89,7 @@ if (!isset($_SESSION['userId'])) {
         $checkmatch = $matchCollection->findOne($matchFilter);
 
         if ($checkmatch) {
-            if ($checkmatch['userId'] == $_SESSION['userId']) {
+            if ($checkmatch['officials']['scorer'] == $_SESSION['userId']) {
 
                 $final_teamA_players = $final_teamB_players = [];
                 $teamA_name = team_name($checkmatch['teamA']);
@@ -152,9 +152,11 @@ if (!isset($_SESSION['userId'])) {
 
                     if(!empty($over_data)){
                         $lastOvers = $over_data;
+                        $event = "over continue";
                     }
                     else{
-                        $lastOvers = "over complete";
+                        $lastOvers = [];
+                        $event = "over complete";
                     }
                     
                     $score = [
@@ -192,11 +194,13 @@ if (!isset($_SESSION['userId'])) {
                         }
                     }
 
-                    if($over_data){
+                    if(!empty($over_data)){
                         $lastOvers = $over_data;
+                        $event = "over continue";
                     }
                     else{
-                        $lastOvers = "over complete";
+                        $lastOvers = [];
+                        $event = "over complete";
                     }
                     $score = [
                         'totalScore' => isset($checkmatch['secondinning']) ? $checkmatch['secondinning']['total_score'] : 0,
@@ -224,7 +228,8 @@ if (!isset($_SESSION['userId'])) {
                     'noOfOvers' => $checkmatch['noOfOvers'],
                     'currentOver' => 0,
                     'score' => $score,
-                    'lastOver' => $lastOvers
+                    'lastOver' => $lastOvers,
+                    'event' => $event
                 ];
                 $response = [
                     'status_code' => 200,
@@ -233,12 +238,13 @@ if (!isset($_SESSION['userId'])) {
             } else {
                 $response = array(
                     'status_code' => 401,
+                    'message' => 'You are not allowed to score in this match.'
                 );
             }
         } else {
             $response = [
                 'status_code' => 404,
-                'message' => 'database empty'
+                'message' => 'Such a Match does not exist'
             ];
         }
     }
