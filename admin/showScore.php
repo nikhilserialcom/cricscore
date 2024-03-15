@@ -163,12 +163,6 @@ if (!isset($_SESSION['userId'])) {
                         'totalScore' => isset($checkmatch['firstinning']) ?  $checkmatch['firstinning']['totalScore'] : 0,
                         'wicket' => isset($checkmatch['firstinning']) ?  $checkmatch['firstinning']['wicket'] : 0,
                         'currentOver' => isset($checkmatch['firstinning']) ?  $checkmatch['firstinning']['currentOver'] : 0.0,
-                        'extra' => [
-                            'by' => 1,
-                            'LB' => 1,
-                            'NB' => 1,
-                            'W' => 4
-                        ],
                     ];
                 }
                 else{

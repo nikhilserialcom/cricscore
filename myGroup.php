@@ -1,9 +1,8 @@
 <?php
 session_start();
-
 require 'partials/mongodbconnect.php';
-
 use MongoDB\BSON\ObjectId;
+
 $allowedOrigins = [
     'https://cricscorers-15aec.web.app',
     'http://localhost:5173',
@@ -22,38 +21,40 @@ header("Access-Control-Allow-Headers:  X-Requested-With, Origin, Content-Type, X
 header("content-type: application/json");
 header("ngrok-skip-browser-warning: 1");
 
+$data = json_decode(file_get_contents('php://input'), true);
+
 if (!isset($_SESSION['userId'])) {
     $response = [
         'status_code' => 400,
         'message' => 'your session is expire'
     ];
 } else {
-    $userId = isset($_SESSION['userId']) ? $_SESSION['userId'] : '';
+    $torId = isset($data['torId']) ? new  ObjectId($data['torId']) : '';
 
-    $matchFilter = ['userId' => $userId];
-    $checkMatch = $matchCollection->find($matchFilter);
+    $filter = ['_id' => $torId];
+    $find_tor = $tournamentCollection->findOne($filter);
 
-    $matches = [];
-
-    foreach ($checkMatch as $match) {
-        $teamAName = $teamCollection->findOne(['_id' => new ObjectId($match['teamA_id'])]);
-        $teamBName = $teamCollection->findOne(['_id' => new ObjectId($match['teamB_id'])]);
-        $match['teamA'] = $teamAName['teamName'];
-        $match['teamB'] = $teamBName['teamName'];
-        $matches[] = $match;
+    if($find_tor){
+        if(isset($find_tor['groups'])){
+            $response = array(
+                'status_code' => 200,
+                'torData' => $find_tor['groups']
+            );
+        }
+        else{
+            $response = array(
+                'status_code' => 200,
+                'torData' => []
+            );
+        }
+    }
+    else{
+        $response = array(
+            'status_code' => 404,
+            'message' => "database empty"
+        );
     }
 
-    if (!empty($matches)) {
-        $response = [
-            'status_code' => 200,
-            'matches' => $matches
-        ];
-    } else {
-        $response = [
-            'status_code' => 400,
-            'message' => 'No record found'
-        ];
-    }
 }
 
-echo json_encode($response, JSON_PRETTY_PRINT);
+echo json_encode($response,JSON_PRETTY_PRINT);

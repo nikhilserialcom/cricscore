@@ -48,7 +48,7 @@ else{
     {
         $response = array(
             'status_code' => '404',
-            'team_arr ' => $team_arr
+            'team_arr' => $team_arr
         );
     }
 }

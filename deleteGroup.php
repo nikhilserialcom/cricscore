@@ -31,21 +31,31 @@ if (!isset($_SESSION['userId'])) {
     $data = json_decode(file_get_contents('php://input'), true);
 
     $tournamentId = isset($data['torId']) ? new ObjectId($data['torId']) : '';
-    $roundId = isset($data['roundId']) ? $data['roundId'] : '';
+    $groupId = isset($data['groupId']) ? $data['groupId'] : '';
 
     $filter = ['_id' => $tournamentId];
     $check_tor = $tournamentCollection->findOne($filter);
     if ($check_tor) {
         if ($check_tor['userId'] == $_SESSION['userId']) {
+            $group_filter = ['_id' => $tournamentId,'groups.id' => $groupId];
+            
+            $update = [
+                '$pull' => [
+                    'groups' => [
+                        'id' => $groupId
+                    ]
+                ]
+            ];
 
+            $update_group = $tournamentCollection->updateOne($group_filter,$update);
             $response = array(
                 'status_code' => 200,
-                'message' => $check_tor
+                'message' => "delete group successfully"
             );
         } else {
             $response = array(
                 'status_code ' => 401,
-                'message' => "This tournament does not allow you to update"
+                'message' => "This tournament does not allow you to delete"
             );
         }
     } else {

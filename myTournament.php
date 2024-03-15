@@ -31,14 +31,14 @@ if (!isset($_SESSION['userId'])) {
 
     $filter = ['userId' => $userId];
     $find_tor = $tournamentCollection->find($filter);
-
+    $final_data = [];
     foreach($find_tor as $tor_data)
     {
         $tor_data['ground'] = $groundCollection->findOne(['_id' => new ObjectId($tor_data['ground'])]);
         $final_data[] = $tor_data;
     }
 
-    if($final_data){
+    if(!empty($final_data)){
         $response = array(
             'status_code' => 200,
             'torData' => $final_data
@@ -46,8 +46,8 @@ if (!isset($_SESSION['userId'])) {
     }
     else{
         $response = array(
-            'status_code' => 404,
-            'message' => "database empty"
+            'status_code' => 200,
+            'torData' => $final_data
         );
     }
 

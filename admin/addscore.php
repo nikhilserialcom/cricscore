@@ -31,7 +31,7 @@ function player_data($data)
     $final_data = [
         '_id' => $user_data['_id'],
         'userName' => $data['userName'],
-        'userProfile' => $user_data['userProfile'],
+        'userProfile' => isset($user_data['userProfile']) ? $user_data['userProfile'] : '',
     ];
     if ($data['playerStatus'] == "bowl") {
         $final_data['bowling'] = $data['bowling'];
@@ -54,7 +54,7 @@ function calculateStrikeRate($runs ,$ball){
 
 function calculateEconomyRate($runs, $ball) {
     if ($ball == 0) {
-        return 0; // To handle division by zero error
+        return 0; 
     }
     
     $parts = explode('.',$ball);

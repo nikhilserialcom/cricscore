@@ -1,55 +1,42 @@
 <?php
+function generateCustomID() {
+    // Generate a unique identifier
+    $uniqid = uniqid();
 
-require 'partials/mongodbconnect.php';
+    // Remove the microseconds part and pad the result to 8 characters
+    $uniqid = substr($uniqid, 0, 12);
 
-use MongoDB\BSON\ObjectId;
-$allowedOrigins = [
-    'https://cricscorers-15aec.web.app',
-    'http://localhost:5173',
-    'http://localhost:5174',
-    'http://192.168.1.15:5173/',
-];
+    // Generate a random hexadecimal string of 3 characters
+    $random = bin2hex(random_bytes(1));
 
-$origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
+    // Concatenate the unique id and random string
+    $customID = $uniqid . $random;
 
-if (in_array($origin, $allowedOrigins)) {
-    header('Access-Control-Allow-Origin: ' . $origin);
+    return $customID;
 }
 
-header('Access-Control-Allow-Credentials: true');
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-header("Access-Control-Allow-Headers:  X-Requested-With, Origin, Content-Type, X-CSRF-Token, Accept");
-header("content-type: application/json");
-header("ngrok-skip-browser-warning: 1");
+function generateID() {
+    // Generate a unique identifier
+    $uniqid = uniqid();
 
-session_start();
+    // Remove the microseconds part and pad the result to 8 characters
+    $uniqid = substr($uniqid, 0, 8);
 
-$data = json_decode(file_get_contents('php://input'), true);
-if(!isset($_SESSION['userId'])){
-    $response = array(
-        'status_code' => "400",
-        'message' => "your session is expire"
-    );
-}else {
-    $teamId = (isset($data['teamId'])) ? new ObjectId($data['teamId']) : '';
-
-    $filter_team = ['_id' => $teamId];
-    $find_team = $teamCollection->findOne($filter_team);
-
-    if($find_team)
-    {
-        $response = array(
-            'status_code' => "200",
-            'team_data' => $find_team
-        );
+    // Generate additional random hexadecimal characters
+    $random = '';
+    for ($i = 0; $i < 12; $i++) {
+        $random .= dechex(mt_rand(0, 15));
     }
-    else{
-        $response = array(
-            'status_code' => "404",
-            'message' => "team is not exist in database"
-        );
-    }
+
+    // Concatenate the unique id and random string
+    $customID = $uniqid . $random;
+
+    return $customID;
 }
 
-echo json_encode($response,JSON_PRETTY_PRINT);
+// Example usage:
+$customID = generateCustomID() . "<br>";
+$userID = generateID();
+echo $customID;
+echo $userID;
 ?>
