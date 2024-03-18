@@ -9,7 +9,7 @@ $allowedOrigins = [
     'https://cricscorers-15aec.web.app',
     'http://localhost:5173',
     'http://localhost:5174',
-    'http://192.168.1.15:5173/',
+    'http://192.168.1.26:5173/',
 ];
 
 $origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
@@ -98,7 +98,7 @@ if (!isset($_SESSION['userId'])) {
     } else {
         $matchId = new ObjectId($matchId);
         $filter = ['_id' => $matchId];
-        $event = "startInning";
+        $startInning = $overComplete = false;
         $over_data = [];
         $check_find = $matchCollection->findOne($filter);
         if ($check_find) {
@@ -212,7 +212,7 @@ if (!isset($_SESSION['userId'])) {
                                 $check_find['firstinning']['currentOver'] = round($check_find['firstinning']['currentOver'] + 0.1, 1);
                             } else {
                                 $check_find['firstinning']['currentOver'] = round($check_find['firstinning']['currentOver'] + 0.5, 1);
-                                $event = "overComplete";
+                                $overComplete = true;
                                 $over_data = [];
                                 if ($runs % 2 == 0) {
                                     $check_find['striker'] = $nonStriker;
@@ -268,7 +268,7 @@ if (!isset($_SESSION['userId'])) {
                             $check_find['secondinning']['currentOver'] = round($check_find['secondinning']['currentOver'] + 0.1, 1);
                         } else {
                             $check_find['secondinning']['currentOver'] = round($check_find['secondinning']['currentOver'] + 0.5, 1);
-                            $event = "overComplete";
+                            $overComplete = true;
                             $over_data = [];
                             if ($runs % 2 == 0) {
                                 $check_find['striker'] = $nonStriker;
@@ -302,6 +302,10 @@ if (!isset($_SESSION['userId'])) {
 
 
                 $final_bowler = player_data($bowler);
+                $event   = [
+                    'overComplete' =>  $overComplete,
+                    'inningComplete' => $startInning
+                ];
 
                 $update_score = $matchCollection->replaceOne($filter, $check_find);
 

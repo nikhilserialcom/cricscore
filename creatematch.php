@@ -8,7 +8,7 @@ $allowedOrigins = [
     'https://cricscorers-15aec.web.app',
     'http://localhost:5173',
     'http://localhost:5174',
-    'http://192.168.1.15:5173/',
+    'http://192.168.1.26:5173/',
 ];
 
 $origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
@@ -76,11 +76,12 @@ if (!isset($_SESSION['userId'])) {
                 'wideBall' => 0,
                 'noBall' => 0,
             ],
-            'filder' => [
+            'fielder' => [
                 'misRun' => 0,
                 'saveRun' => 0,
                 'dropCatch' => 0,
                 'catch' => 0,
+                'stumped' => 0
             ]
         ];
 
@@ -116,11 +117,12 @@ if (!isset($_SESSION['userId'])) {
                     'NB' => 0,
                 ]
             ],
-            'filder' => [
+            'fielder' => [
                 'misRun' => 0,
                 'saveRun' => 0,
                 'dropCatch' => 0,
                 'catch' => 0,
+                'stumped' => 0
             ]
         ];
 

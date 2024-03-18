@@ -9,7 +9,7 @@ $allowedOrigins = [
     'https://cricscorers-15aec.web.app',
     'http://localhost:5173',
     'http://localhost:5174',
-    'http://192.168.1.15:5173/',
+    'http://192.168.1.26:5173/',
 ];
 
 $origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
@@ -94,9 +94,24 @@ if (!isset($_SESSION['userId'])) {
                 $final_teamA_players = $final_teamB_players = [];
                 $teamA_name = team_name($checkmatch['teamA']);
                 $teamB_name = team_name($checkmatch['teamB']);
-                $striker = player_info($checkmatch['striker']);
-                $nonStriker = player_info(($checkmatch['nonStriker']));
                 $bowler = player_info($checkmatch['bowler']);
+                if(!empty($checkmatch['striker'])){
+                    $changeStriker = false;
+                    $striker = player_info($checkmatch['striker']);
+                }
+                else{
+                    $changeStriker = true;
+                    $striker = '';
+                }
+
+                if(!empty($checkmatch['nonStriker'])){
+                    $changeNonStriker = false;
+                    $nonStriker = player_info(($checkmatch['nonStriker']));
+                }
+                else{
+                    $changeNonStriker = true;
+                    $nonStriker = '';
+                }
             
                 $wicketKeeper = [
                     'teamAKeeper' => player_info($checkmatch['teamAPlayers']['roles']['wk']),
@@ -115,6 +130,10 @@ if (!isset($_SESSION['userId'])) {
                         $nonStriker['batting'] = $player['batting'];
                     } elseif ($checkmatch['bowler'] == $player['player_id']) {
                         $bowler['bowling'] = $player['bowling'];
+                    }elseif($player['batting']['batStatus'] == "out"){
+                        $teamAPlayedBatsman[] = $player['player_id'];
+                    }elseif($player['bowling']['over'] == 0){
+                        $teamAPlayedBowler[] = $player['player_id'];
                     }
                 }
 
@@ -126,6 +145,11 @@ if (!isset($_SESSION['userId'])) {
                         $nonStriker['batting'] = $player['batting'];
                     } elseif ($checkmatch['bowler'] == $player['player_id']) {
                         $bowler['bowling'] = $player['bowling'];
+                    }elseif($player['batting']['batStatus'] == "out"){
+                        $teamBPlayedBatsman[] = $player['player_id'];
+                    }
+                    elseif($player['bowling']['over'] == 0){
+                        $teamBPlayedBowler[] = $player['player_id'];
                     }
                 }
                 if($checkmatch['inning'] == 1){
@@ -135,6 +159,10 @@ if (!isset($_SESSION['userId'])) {
                         $batting_players =  $final_teamA_players;
                         $bowler_players = $final_teamB_players;
                         $wicketKeeper = player_info($checkmatch['teamBPlayers']['roles']['wk']);
+                        $final_players = [
+                            'batting' => !empty($teamAPlayedBatsman) ?  $teamAPlayedBatsman : [],
+                            'bowling' => $teamBPlayedBowler
+                        ];
                     }
                     else{
                         $batting_team = $teamB_name;
@@ -142,6 +170,10 @@ if (!isset($_SESSION['userId'])) {
                         $batting_players =  $final_teamB_players;
                         $bowler_players = $final_teamA_players;
                         $wicketKeeper = player_info($checkmatch['teamAPlayers']['roles']['wk']);
+                        $final_players = [
+                            'batting' => !empty($teamBPlayedBatsman) ? $teamBPlayedBatsman : [],
+                            'bowling' => $teamAPlayedBowler
+                        ];
                     }
 
                     foreach($checkmatch['firstinning']['over'] as $over){
@@ -152,11 +184,11 @@ if (!isset($_SESSION['userId'])) {
 
                     if(!empty($over_data)){
                         $lastOvers = $over_data;
-                        $event = "over continue";
+                        $overComplete = false;
                     }
                     else{
                         $lastOvers = [];
-                        $event = "over complete";
+                        $overComplete = true;
                     }
                     
                     $score = [
@@ -173,6 +205,10 @@ if (!isset($_SESSION['userId'])) {
                         $batting_players =  $final_teamB_players;
                         $bowler_players = $final_teamA_players;
                         $wicketKeeper = player_info($checkmatch['teamBPlayers']['roles']['wk']);
+                        $final_players = [
+                            'batting' => !empty($teamAPlayedBatsman) ? $teamBPlayedBatsman : [],
+                            'bowling' => $teamAPlayedBowler
+                        ]; 
                     }
                     else{
                         $batting_team = $teamA_name;
@@ -180,6 +216,10 @@ if (!isset($_SESSION['userId'])) {
                         $batting_players =  $final_teamA_players;
                         $bowler_players = $final_teamB_players;
                         $wicketKeeper = player_info($checkmatch['teamAPlayers']['roles']['wk']);
+                        $final_players = [
+                            'batting' => !empty($teamAPlayedBatsman) ?  $teamAPlayedBatsman : [],
+                            'bowling' => $teamBPlayedBowler
+                        ];
                     }
                     
                     foreach($checkmatch['secondinning']['over'] as $over){
@@ -190,11 +230,11 @@ if (!isset($_SESSION['userId'])) {
 
                     if(!empty($over_data)){
                         $lastOvers = $over_data;
-                        $event = "over continue";
+                        $overComplete = false;
                     }
                     else{
                         $lastOvers = [];
-                        $event = "over complete";
+                        $overComplete = true;
                     }
                     $score = [
                         'totalScore' => isset($checkmatch['secondinning']) ? $checkmatch['secondinning']['total_score'] : 0,
@@ -209,6 +249,12 @@ if (!isset($_SESSION['userId'])) {
                     ];
                 }
 
+                $event   = [
+                    'changeStriker' => $changeStriker,
+                    'changeNonStriker' => $changeNonStriker,
+                    'overComplete' =>  $overComplete
+                ];
+
                 $match_data = [
                     'inning' => $inning,
                     'battingTeam' => $batting_team,
@@ -219,6 +265,7 @@ if (!isset($_SESSION['userId'])) {
                     'nonStriker' => $nonStriker,
                     'bowler' => $bowler,
                     'wicketKeeper' => $wicketKeeper,
+                    'alreadyPlayed' => $final_players,
                     'noOfOvers' => $checkmatch['noOfOvers'],
                     'currentOver' => 0,
                     'score' => $score,

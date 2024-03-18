@@ -9,7 +9,7 @@ $allowedOrigins = [
     'https://cricscorers-15aec.web.app',
     'http://localhost:5173',
     'http://localhost:5174',
-    'http://192.168.1.15:5173/',
+    'http://192.168.1.26:5173/',
 ];
 
 $origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
@@ -53,7 +53,16 @@ if (!isset($_SESSION['userId'])) {
     if ($check_match) {
 
         if($check_match['officials']['scorer'] == $userId){
+            
             if($check_match['inning'] == 1){
+                foreach ($check_match['firstinning']['over'] as $over) {
+                    if ($over['overNumber'] == intval($check_match['firstinning']['currentOver'])) {
+                        $over_data = $over['balls'];
+                    }
+                    else{
+                        $over_data = [];
+                    }
+                }
                 if($check_match['firstinning']['bowl_team'] == "teamB"){
                     foreach($check_match['teamBPlayers']['players'] as $player){
                         if($player['player_id'] == $bowlerId){
@@ -62,13 +71,12 @@ if (!isset($_SESSION['userId'])) {
                     }
                 }
                 else{
-                    foreach($$check_match['teamAPlayers']['players'] as $player){
+                    foreach($check_match['teamAPlayers']['players'] as $player){
                         if($player['player_id'] == $bowlerId){
                             $bowler = $player;
                         }
                     }
                 }
-    
                 $final_data = player_data($bowler);
     
                 $updateBowler = [
@@ -85,7 +93,15 @@ if (!isset($_SESSION['userId'])) {
                 ];
             }
             else{
-                if($check_match['firstinning']['bowl_team'] == "teamB"){
+                foreach ($check_match['secondinning']['over'] as $over) {
+                    if ($over['overNumber'] == intval($check_match['secondinning']['currentOver'])) {
+                        $over_data = $over['balls'];
+                    }
+                    else{
+                        $over_data = [];
+                    }
+                }
+                if($check_match['secondininng']['bowl_team'] == "teamB"){
                     foreach($check_match['teamBPlayers']['players'] as $player){
                         if($player['player_id'] == $bowlerId){
                             $bowler = $player;
@@ -93,7 +109,7 @@ if (!isset($_SESSION['userId'])) {
                     }
                 }
                 else{
-                    foreach($$check_match['teamAPlayers']['players'] as $player){
+                    foreach($check_match['teamAPlayers']['players'] as $player){
                         if($player['player_id'] == $bowlerId){
                             $bowler = $player;
                         }
@@ -119,6 +135,7 @@ if (!isset($_SESSION['userId'])) {
                 $response = array(
                     'status_code' => "200",
                     'bowler' => $final_data,
+                    'over' => $over_data,
                     'message' => 'bowler change successfully'
                 );
             }
