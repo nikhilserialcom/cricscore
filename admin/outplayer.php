@@ -51,7 +51,11 @@ if (!isset($_SESSION['userId'])) {
     $batsmanId = isset($data['batsman']) ? $data['batsman'] : '';
     $bowlerId = isset($data['bowler']) ? $data['bowler'] : '';
     $filder = isset($data['fielder']) ? $data['fielder'] : '';
+    $fielder1 = isset($data['fielder1']) ? $data['fielder1'] : '';
+    $fielder2 = isset($data['filder2']) ? $data['filder2'] : '';
+    $direactHit = isset($data['directHit']) ? $data['directHit'] : '';
     $out_style = isset($data['type']) ?  $data['type'] : '';
+    $ball_obj = isset($data['ball']) ? $data['ball'] : '';
 
     $filter = ['_id' => $matchId];
     $find_match = $matchCollection->findOne($filter);
@@ -60,50 +64,92 @@ if (!isset($_SESSION['userId'])) {
 
     if ($find_match) {
         if ($find_match['officials']['scorer'] == $_SESSION['userId']) {
-            if($out_style == "Caught and Bowled"){
+            if ($out_style == "Caught and Bowled") {
                 $fielder = $bowlerId;
-            }
-            else{
+            } else {
                 $fielder = $filder;
             }
             foreach ($find_match['teamAPlayers']['players'] as $key => $player) {
                 if ($player['player_id'] == $batsmanId) {
-                    $player['batting']['batStatus'] = "out";
-                    $player['batting']['outStyle'] = $out_style;
-                    $batsman = $player;
+                    if ($out_style == "Retired") {
+                        $player['batting']['outStyle'] = $out_style;
+                        $batsman = $player;
+                    } else {
+                        $player['batting']['batStatus'] = "out";
+                        $player['batting']['outStyle'] = $out_style;
+                        $batsman = $player;
+                    }
                 }
             }
 
             foreach ($find_match['teamBPlayers']['players'] as $key => $player) {
                 if ($player['player_id'] == $bowlerId) {
-                    $player['bowling']['wicket']++;
-                    if ($player['bowling']['over'] * 10 % 10 < 5) {
-                        $player['bowling']['over'] = round($player['bowling']['over'] + 0.1, 1);
-                    } else {
-                        $player['bowling']['over'] = round($player['bowling']['over'] + 0.5, 1);
+                    if ($out_style != "Run Out" || $out_style != "Retired") {
+                        $player['bowling']['wicket']++;
                     }
+                    if (!empty($ball_obj)) {
+                        if ($ball_obj['deliveryType'] == "wideBall") {
+                            $player['bowling']['runs'] += intval($ball_obj['totalRuns']);
+                            $player['bowling']['wideBall']++;
+                        } elseif ($ball_obj['deliveryType'] == "noBall") {
+                            $player['bowling']['runs'] += intval($ball_obj['totalRuns']);
+                            $player['bowling']['noBall']++;
+                        } else {
+                            $player['bowling']['runs'] += intval($ball_obj['runs']);
+                        }
+                        if ($ball_obj['countBall'] == "true") {
+                            if ($player['bowling']['over'] * 10 % 10 < 5) {
+                                $player['bowling']['over'] = round($player['bowling']['over'] + 0.1, 1);
+                            } else {
+                                $player['bowling']['over'] = round($player['bowling']['over'] + 0.5, 1);
+                            }
+                        }
+                    } else {
+                        if ($player['bowling']['over'] * 10 % 10 < 5) {
+                            $player['bowling']['over'] = round($player['bowling']['over'] + 0.1, 1);
+                        } else {
+                            $player['bowling']['over'] = round($player['bowling']['over'] + 0.5, 1);
+                        }
+                    }
+
                     $bowler = $player;
-                } 
+                }
 
                 if ($player['player_id'] == $fielder) {
-                    if($out_style == "Stumped Out"){
-                        $player['filder']['stumped']++; 
+                    if ($out_style == "Stumped Out") {
+                        $player['fielder']['stumped']++;
+                    } else {
+                        $player['fielder']['catch']++;
                     }
-                    else{
-                        $player['filder']['catch']++;
+                }
+                if($out_style == "Run Out"){
+                    if ($direactHit == "true") {
+                        if ($player['player_id'] == $fielder1) {
+                            $player['fielder']['assitedRunOut']++;
+                            $player['fielder']['RunOut']++;
+                        }
+                    } else {
+                        if ($player['player_id'] == $fielder1) {
+                            $player['fielder']['assitedRunOut']++;
+                        }
+    
+                        if ($player['player_id'] == $fielder2) {
+                            $player['fielder']['RunOut']++;
+                        }
                     }
                 }
             }
 
             if ($find_match['striker'] == $batsmanId) {
                 $changeStriker = true;
-                $find_match['striker'] = '';
             } else {
                 $changeNonStriker = true;
-                $find_match['nonStriker'] = '';
             }
+
             if ($find_match['inning'] == 1) {
-                $find_match['firstinning']['wicket']++;
+                if ($out_style != "Retired") {
+                    $find_match['firstinning']['wicket']++;
+                }
                 $over =  round($find_match['firstinning']['currentOver'] + 0.1, 1);
 
                 $balls = [
@@ -117,12 +163,23 @@ if (!isset($_SESSION['userId'])) {
                         $over_data = $over['balls'];
                     }
                 }
-
-                if ($find_match['firstinning']['currentOver'] * 10 % 10 < 5) {
-                    $find_match['firstinning']['currentOver'] = round($find_match['firstinning']['currentOver'] + 0.1, 1);
+                if (!empty($ball_obj)) {
+                    $find_match['firstinning']['totalScore'] += $ball_obj['totalRuns'];
+                    if ($ball_obj['countBall'] == "true") {
+                        if ($find_match['firstinning']['currentOver'] * 10 % 10 < 5) {
+                            $find_match['firstinning']['currentOver'] = round($find_match['firstinning']['currentOver'] + 0.1, 1);
+                        } else {
+                            $find_match['firstinning']['currentOver'] = round($find_match['firstinning']['currentOver'] + 0.5, 1);
+                            $overComplete = true;
+                        }
+                    }
                 } else {
-                    $find_match['firstinning']['currentOver'] = round($find_match['firstinning']['currentOver'] + 0.5, 1);
-                    $overComplete = true;
+                    if ($find_match['firstinning']['currentOver'] * 10 % 10 < 5) {
+                        $find_match['firstinning']['currentOver'] = round($find_match['firstinning']['currentOver'] + 0.1, 1);
+                    } else {
+                        $find_match['firstinning']['currentOver'] = round($find_match['firstinning']['currentOver'] + 0.5, 1);
+                        $overComplete = true;
+                    }
                 }
 
                 $score = [

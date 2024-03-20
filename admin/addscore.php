@@ -141,14 +141,16 @@ if (!isset($_SESSION['userId'])) {
                     if ($players['player_id'] == $batsmanId) {
                         $check_find['teamBPlayers']['players'][$key]['batting']['runs'] += $runs;
                         $check_find['teamBPlayers']['players'][$key]['batting']['ball']++;
+                        $players['playerStatus'] = 'bat';
                         $striker = $players;
                     } elseif ($players['player_id'] == $nonStriker) {
+                        $players['playerStatus'] = 'bat';
                         $non_striker = $players;
                     } elseif ($players['player_id'] == $bowlerId) {
-                        if ($deliveryType == 'wideBall') {
+                        if ($deliveryType == "wideBall") {
                             $check_find['teamBPlayers']['players'][$key]['bowling']['runs'] += intval($total_run);
                             $check_find['teamBPlayers']['players'][$key]['bowling']['wideBall']++;
-                        } elseif ($deliveryType == 'noBall') {
+                        } elseif ($deliveryType == "noBall") {
                             $check_find['teamBPlayers']['players'][$key]['bowling']['runs'] += intval($total_run);
                             $check_find['teamBPlayers']['players'][$key]['bowling']['noBall']++;
                         } elseif ($isBoundary == "true" && $runs == "4") {

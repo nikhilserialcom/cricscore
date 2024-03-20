@@ -122,7 +122,9 @@ if (!isset($_SESSION['userId'])) {
                 'saveRun' => 0,
                 'dropCatch' => 0,
                 'catch' => 0,
-                'stumped' => 0
+                'stumped' => 0,
+                'assitedRunOut' => 0,
+                'RunOut' => 0
             ]
         ];
 

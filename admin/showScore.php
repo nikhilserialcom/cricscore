@@ -267,7 +267,6 @@ if (!isset($_SESSION['userId'])) {
                     'wicketKeeper' => $wicketKeeper,
                     'alreadyPlayed' => $final_players,
                     'noOfOvers' => $checkmatch['noOfOvers'],
-                    'currentOver' => 0,
                     'score' => $score,
                     'lastOver' => $lastOvers,
                     'event' => $event
