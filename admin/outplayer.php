@@ -164,6 +164,14 @@ if (!isset($_SESSION['userId'])) {
                     }
                 }
                 if (!empty($ball_obj)) {
+                    if($ball_obj['runs'] % 2 != 0){
+                        $find_match['striker'] = $ball_obj['nonStriker'];
+                        $find_match['nonStriker'] = $ball_obj['striker'];
+                    }
+                    else{
+                        $find_match['striker'] = $ball_obj['striker'];
+                        $find_match['nonStriker'] = $ball_obj['nonStriker'];
+                    }
                     $find_match['firstinning']['totalScore'] += $ball_obj['totalRuns'];
                     if ($ball_obj['countBall'] == "true") {
                         if ($find_match['firstinning']['currentOver'] * 10 % 10 < 5) {
@@ -171,6 +179,14 @@ if (!isset($_SESSION['userId'])) {
                         } else {
                             $find_match['firstinning']['currentOver'] = round($find_match['firstinning']['currentOver'] + 0.5, 1);
                             $overComplete = true;
+                            if($ball_obj['runs'] % 2 == 0){
+                                $find_match['striker'] = $ball_obj['nonStriker'];
+                                $find_match['nonStriker'] = $ball_obj['striker'];
+                            }
+                            else{
+                                $find_match['striker'] = $ball_obj['striker'];
+                                $find_match['nonStriker'] = $ball_obj['nonStriker'];
+                            }
                         }
                     }
                 } else {

@@ -176,7 +176,7 @@ if (!isset($_SESSION['userId'])) {
                     }
                 }
 
-                if ($runs % 2 != 0) {
+                if ($runs % 2 != 0) {   
                     $check_find['striker'] = $nonStriker;
                     $check_find['nonStriker'] = $batsmanId;
                     $final_stirker = player_data($non_striker);
