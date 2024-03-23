@@ -122,7 +122,7 @@ if (!isset($_SESSION['userId'])) {
                         $player['fielder']['catch']++;
                     }
                 }
-                if($out_style == "Run Out"){
+                if ($out_style == "Run Out") {
                     if ($direactHit == "true") {
                         if ($player['player_id'] == $fielder1) {
                             $player['fielder']['assitedRunOut']++;
@@ -132,7 +132,7 @@ if (!isset($_SESSION['userId'])) {
                         if ($player['player_id'] == $fielder1) {
                             $player['fielder']['assitedRunOut']++;
                         }
-    
+
                         if ($player['player_id'] == $fielder2) {
                             $player['fielder']['RunOut']++;
                         }
@@ -142,8 +142,10 @@ if (!isset($_SESSION['userId'])) {
 
             if ($find_match['striker'] == $batsmanId) {
                 $changeStriker = true;
+                $find_match['striker'] = '';
             } else {
                 $changeNonStriker = true;
+                $find_match['nonStriker'] = '';
             }
 
             if ($find_match['inning'] == 1) {
@@ -164,13 +166,44 @@ if (!isset($_SESSION['userId'])) {
                     }
                 }
                 if (!empty($ball_obj)) {
-                    if($ball_obj['runs'] % 2 != 0){
-                        $find_match['striker'] = $ball_obj['nonStriker'];
-                        $find_match['nonStriker'] = $ball_obj['striker'];
-                    }
-                    else{
-                        $find_match['striker'] = $ball_obj['striker'];
-                        $find_match['nonStriker'] = $ball_obj['nonStriker'];
+                    if ($ball_obj['runs'] % 2 != 0) {
+                        if ($changeStriker == true) {
+                            $find_match['striker'] = $ball_obj['nonStriker'];
+                            $find_match['nonStriker'] = '';
+                            $changeNonStriker = true;
+                            $changeStriker = false;
+                        } else {
+                            $find_match['striker'] = '';
+                            $find_match['nonStriker'] = $ball_obj['striker'];
+                            $changeStriker = true;
+                            $changeNonStriker = false;
+                        }
+                        // if($find_match['striker'] == $batsmanId){
+                        //     $changeNonStriker = true;
+                        //     $changeStriker = false;
+                        // }else{
+                        //     $changeStriker = true;
+                        //     $changeNonStriker = false;
+                        // }
+                    } else {
+                        if ($changeStriker == true) {
+                            $find_match['striker'] == '';
+                            $find_match['nonStriker'] == $ball_obj['nonStriker'];
+                            $changeStriker = true;
+                            $changeNonStriker = false;
+                        } else {
+                            $find_match['striker'] == $ball_obj['striker'];
+                            $find_match['nonStriker'] == '';
+                            $changeNonStriker = true;
+                            $changeStriker = false;
+                        }
+                        // if($find_match['striker'] == $batsmanId){
+                        //     $changeStriker = true;
+                        //     $changeNonStriker = false;
+                        // }else{
+                        //     $changeNonStriker = true;
+                        //     $changeStriker = false;
+                        // }
                     }
                     $find_match['firstinning']['totalScore'] += $ball_obj['totalRuns'];
                     if ($ball_obj['countBall'] == "true") {
@@ -179,11 +212,10 @@ if (!isset($_SESSION['userId'])) {
                         } else {
                             $find_match['firstinning']['currentOver'] = round($find_match['firstinning']['currentOver'] + 0.5, 1);
                             $overComplete = true;
-                            if($ball_obj['runs'] % 2 == 0){
+                            if ($ball_obj['runs'] % 2 == 0) {
                                 $find_match['striker'] = $ball_obj['nonStriker'];
                                 $find_match['nonStriker'] = $ball_obj['striker'];
-                            }
-                            else{
+                            } else {
                                 $find_match['striker'] = $ball_obj['striker'];
                                 $find_match['nonStriker'] = $ball_obj['nonStriker'];
                             }
