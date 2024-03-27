@@ -156,9 +156,15 @@ if (!isset($_SESSION['userId'])) {
 
                 $balls = [
                     'ballNo' => $over,
+                    'striker' => $ball_obj['striker'],
+                    'nonStriker' => $ball_obj['nonStriker'],
+                    'outBatsman' => $batsmanId,
+                    'out_style' => $out_style,
                     'runs' => "W",
                     'deliveryType' => 'fair'
                 ];
+
+                if($out_style == "")
                 foreach ($find_match['firstinning']['over'] as $over) {
                     if ($over['overNumber'] == intval($find_match['firstinning']['currentOver'])) {
                         $over['balls'][] = $balls;

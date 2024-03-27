@@ -32,9 +32,12 @@ function player_data($data)
         '_id' => $user_data['_id'],
         'userName' => $data['userName'],
         'userProfile' => isset($user_data['userProfile']) ? $user_data['userProfile'] : '',
-        'bowling' => $data['bowling']
     ];
-
+    if ($data['playerStatus'] == "bowl") {
+        $final_data['bowling'] = $data['bowling'];
+    } else {
+        $final_data['batting'] = $data['batting'];
+    }
     return $final_data;
 }
 
@@ -48,211 +51,193 @@ if (!isset($_SESSION['userId'])) {
     $data = json_decode(file_get_contents('php://input'), true);
 
     $matchId = isset($data['matchId']) ? new ObjectId($data['matchId']) : '';
-    $batsmanId = isset($data['batsman']) ? $data['batsman'] : '';
+    $striker = isset($data['striker']) ? $data['striker'] : '';
+    $nonStriker = isset($data['nonStriker']) ? $data['nonStriker'] : '';
     $bowlerId = isset($data['bowler']) ? $data['bowler'] : '';
-    $filder = isset($data['fielder']) ? $data['fielder'] : '';
-    $fielder1 = isset($data['fielder1']) ? $data['fielder1'] : '';
-    $fielder2 = isset($data['filder2']) ? $data['filder2'] : '';
-    $direactHit = isset($data['directHit']) ? $data['directHit'] : '';
-    $out_style = isset($data['type']) ?  $data['type'] : '';
-    $ball_obj = isset($data['ball']) ? $data['ball'] : '';
+
 
     $filter = ['_id' => $matchId];
     $find_match = $matchCollection->findOne($filter);
 
-    $overComplete = $changeNonStriker = $changeStriker = false;
-
     if ($find_match) {
         if ($find_match['officials']['scorer'] == $_SESSION['userId']) {
-            if ($out_style == "Caught and Bowled") {
-                $fielder = $bowlerId;
-            } else {
-                $fielder = $filder;
-            }
-            foreach ($find_match['teamAPlayers']['players'] as $key => $player) {
-                if ($player['player_id'] == $batsmanId) {
-                    if ($out_style == "Retired") {
-                        $player['batting']['outStyle'] = $out_style;
-                        $batsman = $player;
-                    } else {
-                        $player['batting']['batStatus'] = "out";
-                        $player['batting']['outStyle'] = $out_style;
-                        $batsman = $player;
-                    }
-                }
-            }
-
-            foreach ($find_match['teamBPlayers']['players'] as $key => $player) {
-                if ($player['player_id'] == $bowlerId) {
-                    if ($out_style != "Run Out" || $out_style != "Retired") {
-                        $player['bowling']['wicket']++;
-                    }
-                    if (!empty($ball_obj)) {
-                        if ($ball_obj['deliveryType'] == "wideBall") {
-                            $player['bowling']['runs'] += intval($ball_obj['totalRuns']);
-                            $player['bowling']['wideBall']++;
-                        } elseif ($ball_obj['deliveryType'] == "noBall") {
-                            $player['bowling']['runs'] += intval($ball_obj['totalRuns']);
-                            $player['bowling']['noBall']++;
-                        } else {
-                            $player['bowling']['runs'] += intval($ball_obj['runs']);
-                        }
-                        if ($ball_obj['countBall'] == "true") {
-                            if ($player['bowling']['over'] * 10 % 10 < 5) {
-                                $player['bowling']['over'] = round($player['bowling']['over'] + 0.1, 1);
-                            } else {
-                                $player['bowling']['over'] = round($player['bowling']['over'] + 0.5, 1);
-                            }
-                        }
-                    } else {
-                        if ($player['bowling']['over'] * 10 % 10 < 5) {
-                            $player['bowling']['over'] = round($player['bowling']['over'] + 0.1, 1);
-                        } else {
-                            $player['bowling']['over'] = round($player['bowling']['over'] + 0.5, 1);
-                        }
-                    }
-
-                    $bowler = $player;
-                }
-
-                if ($player['player_id'] == $fielder) {
-                    if ($out_style == "Stumped Out") {
-                        $player['fielder']['stumped']++;
-                    } else {
-                        $player['fielder']['catch']++;
-                    }
-                }
-                if ($out_style == "Run Out") {
-                    if ($direactHit == "true") {
-                        if ($player['player_id'] == $fielder1) {
-                            $player['fielder']['assitedRunOut']++;
-                            $player['fielder']['RunOut']++;
-                        }
-                    } else {
-                        if ($player['player_id'] == $fielder1) {
-                            $player['fielder']['assitedRunOut']++;
-                        }
-
-                        if ($player['player_id'] == $fielder2) {
-                            $player['fielder']['RunOut']++;
-                        }
-                    }
-                }
-            }
-
-            if ($find_match['striker'] == $batsmanId) {
-                $changeStriker = true;
-                $find_match['striker'] = '';
-            } else {
-                $changeNonStriker = true;
-                $find_match['nonStriker'] = '';
-            }
-
             if ($find_match['inning'] == 1) {
-                if ($out_style != "Retired") {
-                    $find_match['firstinning']['wicket']++;
-                }
-                $over =  round($find_match['firstinning']['currentOver'] + 0.1, 1);
-
-                $balls = [
-                    'ballNo' => $over,
-                    'runs' => "W",
-                    'deliveryType' => 'fair'
-                ];
                 foreach ($find_match['firstinning']['over'] as $over) {
                     if ($over['overNumber'] == intval($find_match['firstinning']['currentOver'])) {
-                        $over['balls'][] = $balls;
-                        $over_data = $over['balls'];
-                    }
-                }
-                if (!empty($ball_obj)) {
-                    if ($ball_obj['runs'] % 2 != 0) {
-                        if ($changeStriker == true) {
-                            $find_match['striker'] = $ball_obj['nonStriker'];
-                            $find_match['nonStriker'] = '';
-                            $changeNonStriker = true;
-                            $changeStriker = false;
-                        } else {
-                            $find_match['striker'] = '';
-                            $find_match['nonStriker'] = $ball_obj['striker'];
-                            $changeStriker = true;
-                            $changeNonStriker = false;
-                        }
-                        // if($find_match['striker'] == $batsmanId){
-                        //     $changeNonStriker = true;
-                        //     $changeStriker = false;
-                        // }else{
-                        //     $changeStriker = true;
-                        //     $changeNonStriker = false;
-                        // }
-                    } else {
-                        if ($changeStriker == true) {
-                            $find_match['striker'] == '';
-                            $find_match['nonStriker'] == $ball_obj['nonStriker'];
-                            $changeStriker = true;
-                            $changeNonStriker = false;
-                        } else {
-                            $find_match['striker'] == $ball_obj['striker'];
-                            $find_match['nonStriker'] == '';
-                            $changeNonStriker = true;
-                            $changeStriker = false;
-                        }
-                        // if($find_match['striker'] == $batsmanId){
-                        //     $changeStriker = true;
-                        //     $changeNonStriker = false;
-                        // }else{
-                        //     $changeNonStriker = true;
-                        //     $changeStriker = false;
-                        // }
-                    }
-                    $find_match['firstinning']['totalScore'] += $ball_obj['totalRuns'];
-                    if ($ball_obj['countBall'] == "true") {
-                        if ($find_match['firstinning']['currentOver'] * 10 % 10 < 5) {
-                            $find_match['firstinning']['currentOver'] = round($find_match['firstinning']['currentOver'] + 0.1, 1);
-                        } else {
-                            $find_match['firstinning']['currentOver'] = round($find_match['firstinning']['currentOver'] + 0.5, 1);
-                            $overComplete = true;
-                            if ($ball_obj['runs'] % 2 == 0) {
-                                $find_match['striker'] = $ball_obj['nonStriker'];
-                                $find_match['nonStriker'] = $ball_obj['striker'];
-                            } else {
-                                $find_match['striker'] = $ball_obj['striker'];
-                                $find_match['nonStriker'] = $ball_obj['nonStriker'];
+                        foreach ($over['balls'] as $ball) {
+                            if ($ball['ballNo'] == $find_match['firstinning']['currentOver']) {
+                                $lastBall = $ball;
                             }
                         }
-                    }
-                } else {
-                    if ($find_match['firstinning']['currentOver'] * 10 % 10 < 5) {
-                        $find_match['firstinning']['currentOver'] = round($find_match['firstinning']['currentOver'] + 0.1, 1);
-                    } else {
-                        $find_match['firstinning']['currentOver'] = round($find_match['firstinning']['currentOver'] + 0.5, 1);
-                        $overComplete = true;
+                        $balls = iterator_to_array($over['balls']);
+                        array_pop($balls);
+                        $over['balls'] = $balls;
                     }
                 }
 
-                $score = [
-                    'totalScore' => isset($find_match['firstinning']) ?  $find_match['firstinning']['totalScore'] : 0,
-                    'wicket' => isset($find_match['firstinning']) ?  $find_match['firstinning']['wicket'] : 0,
-                    'currentOver' => isset($find_match['firstinning']) ?  $find_match['firstinning']['currentOver'] : 0.0,
-                ];
+                $find_match['firstinning']['totalScore'] -= $lastBall['runs'];
+                if ($lastBall['deliveryType'] == "wideBall") {
+                    $find_match['firstinning']['extra']['W']--;
+                } elseif ($lastBall['deliveryType'] == "noBall") {
+                    $find_match['firstinning']['extra']['NB']--;
+                } elseif ($lastBall['deliveryType'] == "bye") {
+                    $find_match['firstinning']['extra']['by']--;
+                } elseif ($lastBall['deliveryType'] == "lagBye") {
+                    $find_match['firstinning']['extra']['LB']--;
+                }
+
+                if ($find_match['firstinning']['currentOver'] * 10 % 10 <= 5) {
+                    $find_match['firstinning']['currentOver'] = round($find_match['firstinning']['currentOver'] - 0.1, 1);
+                } else {
+                    $find_match['firstinning']['currentOver'] = round($find_match['firstinning']['currentOver'] - 0.5, 1);
+                }
             } else {
-                $find_match['secondinning']['wicket']++;
+                foreach ($find_match['secondinning']['over'] as $over) {
+                    if ($over['overNumber'] == intval($find_match['secondinning']['currentOver'])) {
+                        foreach ($over['balls'] as $ball) {
+                            if ($ball['ballNo'] == $find_match['secondinning']['currentOver']) {
+                                $lastBall = $ball;
+                            }
+                        }
+                        $balls = iterator_to_array($over['balls']);
+                        array_pop($balls);
+                        $over['balls'] = $balls;
+                    }
+                }
+
+                $find_match['secondinning']['totalScore'] -= $lastBall['totalRuns'];
+                if ($lastBall['deliveryType'] == "wideBall") {
+                    $find_match['secondinning']['extra']['W']--;
+                } elseif ($lastBall['deliveryType'] == "noBall") {
+                    $find_match['secondinning']['extra']['NB']--;
+                } elseif ($lastBall['deliveryType'] == "bye") {
+                    $find_match['secondinning']['extra']['by']--;
+                } elseif ($lastBall['deliveryType'] == "lagBye") {
+                    $find_match['secondinning']['extra']['LB']--;
+                }
+                if($lastBall['deliveryType'] == "fair"){
+                    if ($find_match['secondinning']['currentOver'] * 10 % 10 <= 5) {
+                        $find_match['secondinning']['currentOver'] = round($find_match['secondinning']['currentOver'] - 0.1, 1);
+                    } else {
+                        $find_match['secondinning']['currentOver'] = round($find_match['secondinning']['currentOver'] - 0.5, 1);
+                    }
+                }
             }
 
-            $final_bowler = player_data($bowler);
-            $event   = [
-                'changeStriker' => $changeStriker,
-                'changeNonStriker' => $changeNonStriker,
-                'overComplete' =>  $overComplete
-            ];
+            foreach ($find_match['teamAPlayers']['players'] as $key => $players) {
+                if ($players['player_id'] == $lastBall['striker']) {
+                    $find_match['teamAPlayers']['players'][$key]['batting']['runs'] -= $lastBall['runs'];
 
-            $update_score = $matchCollection->replaceOne($filter, $find_match);
+                    $find_match['teamAPlayers']['players'][$key]['batting']['ball']--;
+                    if (isset($lastBall['boundary']) == true && $lastBall['runs'] == "4") {
+                        $find_match['teamAPlayers']['players'][$key]['batting']['four']--;
+                    } elseif (isset($lastBall['boundary']) == true && $lastBall['runs'] == "6") {
+                        $find_match['teamAPlayers']['players'][$key]['batting']['six']--;
+                    }
+                    $players['playerStatus'] = 'bat';
+                    $Striker = $players;
+                } elseif ($players['player_id'] == $lastBall['nonStriker']) {
+                    $players['playerStatus'] = 'bat';
+                    $non_striker = $players;
+                } elseif ($players['player_id'] == $bowlerId) {
+                    if($lastBall['deliveryType'] == "wideBall"){
+                        $find_match['teamAPlayers']['players'][$key]['bowling']['runs'] -= $lastBall['totalRuns'];
+                        $find_match['teamAPlayers']['players'][$key]['bowling']['wideBall']--;
+                    }elseif($lastBall['deliveryType'] == "noBall"){
+                        $find_match['teamAPlayers']['players'][$key]['bowling']['runs'] -= $lastBall['totalRuns'];
+                        $find_match['teamAPlayers']['players'][$key]['bowling']['noBall']--;
+                    }else{
+                        $find_match['teamAPlayers']['players'][$key]['bowling']['runs'] -= $lastBall['runs'];
+                    }
+                    if (isset($lastBall['boundary']) == true && $lastBall['runs'] == "4") {
+                        $find_match['teamAPlayers']['players'][$key]['bowling']['four']--;
+                    } elseif (isset($lastBall['boundary']) == true && $lastBall['runs'] == "6") {
+                        $find_match['teamAPlayers']['players'][$key]['bowling']['six']--;
+                    }
+                    if($lastBall['deliveryType'] == 'fair'){
+                        if ($find_match['teamAPlayers']['players'][$key]['bowling']['over'] * 10 % 10 <= 5) {
+                            $find_match['teamAPlayers']['players'][$key]['bowling']['over'] = round($find_match['teamAPlayers']['players'][$key]['bowling']['over'] - 0.1, 1);
+                        } else {
+                            $find_match['teamAPlayers']['players'][$key]['bowling']['over'] = round($find_match['teamAPlayers']['players'][$key]['bowling']['over'] - 0.5, 1);
+                        }
+                    }
+                    $players['playerStatus'] = 'bowl';
+                    $bowler = $players;
+                }
+            }
+
+            foreach ($find_match['teamBPlayers']['players'] as $key => $players) {
+                if ($players['player_id'] == $lastBall['striker']) {
+                    if($lastBall['deliveryType'] == "wideBall"){
+                        $find_match['teamBPlayers']['players'][$key]['bowling']['runs'] -= $lastBall['totalRuns'];
+                        $find_match['teamBPlayers']['players'][$key]['bowling']['wideBall']--;
+                    }elseif($lastBall['deliveryType'] == "noBall"){
+                        $find_match['teamBPlayers']['players'][$key]['bowling']['runs'] -= $lastBall['totalRuns'];
+                        $find_match['teamBPlayers']['players'][$key]['bowling']['noBall']--;
+                    }else{
+                        $find_match['teamBPlayers']['players'][$key]['bowling']['runs'] -= $lastBall['runs'];
+                    }
+
+                    $find_match['teamBPlayers']['players'][$key]['batting']['ball']--;
+                    if (isset($lastBall['boundary']) == true && $lastBall['runs'] == "4") {
+                        $find_match['teamBPlayers']['players'][$key]['batting']['four']--;
+                    } elseif (isset($lastBall['boundary']) == true && $lastBall['runs'] == "6") {
+                        $find_match['teamBPlayers']['players'][$key]['batting']['six']--;
+                    }
+                    $players['playerStatus'] = 'bat';
+                    $Striker = $players;
+                } elseif ($players['player_id'] == $lastBall['nonStriker']) {
+                    $players['playerStatus'] = 'bat';
+                    $non_striker = $players;
+                } elseif ($players['player_id'] == $bowlerId) {
+                    $find_match['teamBPlayers']['players'][$key]['bowling']['runs'] -= $lastBall['runs'];
+
+                    if (isset($lastBall['boundary']) == true && $lastBall['runs'] == "4") {
+                        $find_match['teamBPlayers']['players'][$key]['bowling']['four']--;
+                    } elseif (isset($lastBall['boundary']) == true && $lastBall['runs'] == "6") {
+                        $find_match['teamBPlayers']['players'][$key]['bowling']['six']--;
+                    }
+                    if($lastBall['deliveryType'] == 'fair'){
+                        if ($find_match['teamBPlayers']['players'][$key]['bowling']['over'] * 10 % 10 <= 5) {
+                            $find_match['teamBPlayers']['players'][$key]['bowling']['over'] = round($find_match['teamBPlayers']['players'][$key]['bowling']['over'] - 0.1, 1);
+                        } else {
+                            $find_match['teamBPlayers']['players'][$key]['bowling']['over'] = round($find_match['teamBPlayers']['players'][$key]['bowling']['over'] - 0.5, 1);
+                        }
+                    }
+                    $players['playerStatus'] = 'bowl';
+                    $bowler = $players;
+                }
+            }
+
+            if ($lastBall['runs'] % 2 != 0) {
+                $find_match['striker'] = $nonStriker;
+                $find_match['nonStriker'] = $striker;
+                $final_striker = player_data($non_striker);
+                $final_non_striker = player_data($Striker);
+            } else {
+                $find_match['striker'] = $striker;
+                $find_match['nonStriker'] = $nonStriker;
+                $final_striker = player_data($Striker);
+                $final_non_striker = player_data($non_striker);
+            }
+
+            if ($lastBall['runs'] % 2 == 0) {
+                $check_find['striker'] = $nonStriker;
+                $check_find['nonStriker'] = $striker;
+                $final_striker = player_data($non_striker);
+                $final_non_striker = player_data($Striker);
+            } else {
+                $check_find['striker'] = $striker;
+                $check_find['nonStriker'] = $nonStriker;
+                $final_striker = player_data($Striker);
+                $final_non_striker = player_data($non_striker);
+            }
+
+            $update_data = $matchCollection->replaceOne($filter, $find_match);
             $response = array(
                 'status_code' => 200,
-                'bowler' => $final_bowler,
-                'score' => $score,
-                'event' => $event,
-                'over' => $over_data,
+                'striker' => $final_striker,
+                'nonStriker' => $final_non_striker,
             );
         } else {
             $response = array(
@@ -269,4 +254,4 @@ if (!isset($_SESSION['userId'])) {
 }
 
 
-echo json_encode($response);
+echo json_encode($response, JSON_PRETTY_PRINT);
