@@ -69,6 +69,8 @@ if (!isset($_SESSION['userId'])) {
             } else {
                 $fielder = $filder;
             }
+            $currentStriker = $find_match['striker'];
+            $currentNonStriker = $find_match['nonStriker'];
             foreach ($find_match['teamAPlayers']['players'] as $key => $player) {
                 if ($player['player_id'] == $batsmanId) {
                     if ($out_style == "Retired") {
@@ -79,11 +81,74 @@ if (!isset($_SESSION['userId'])) {
                         $player['batting']['outStyle'] = $out_style;
                         $batsman = $player;
                     }
+                }elseif ($player['player_id'] == $bowlerId) {
+                    if ($out_style != "Run Out" || $out_style != "Retired") {
+                        $player['bowling']['wicket']++;
+                    }
+                    if (!empty($ball_obj)) {
+                        if ($ball_obj['deliveryType'] == "wideBall") {
+                            $player['bowling']['runs'] += intval($ball_obj['totalRuns']);
+                            $player['bowling']['wideBall']++;
+                        } elseif ($ball_obj['deliveryType'] == "noBall") {
+                            $player['bowling']['runs'] += intval($ball_obj['totalRuns']);
+                            $player['bowling']['noBall']++;
+                        } else {
+                            $player['bowling']['runs'] += intval($ball_obj['runs']);
+                        }
+                        if ($ball_obj['countBall'] == "true") {
+                            if ($player['bowling']['over'] * 10 % 10 < 5) {
+                                $player['bowling']['over'] = round($player['bowling']['over'] + 0.1, 1);
+                            } else {
+                                $player['bowling']['over'] = round($player['bowling']['over'] + 0.5, 1);
+                            }
+                        }
+                    } else {
+                        if ($player['bowling']['over'] * 10 % 10 < 5) {
+                            $player['bowling']['over'] = round($player['bowling']['over'] + 0.1, 1);
+                        } else {
+                            $player['bowling']['over'] = round($player['bowling']['over'] + 0.5, 1);
+                        }
+                    }
+
+                    $bowler = $player;
+                }
+                
+                if ($player['player_id'] == $fielder) {
+                    if ($out_style == "Stumped Out") {
+                        $player['fielder']['stumped']++;
+                    } else {
+                        $player['fielder']['catch']++;
+                    }
+                }
+                if ($out_style == "Run Out") {
+                    if ($direactHit == "true") {
+                        if ($player['player_id'] == $fielder1) {
+                            $player['fielder']['assitedRunOut']++;
+                            $player['fielder']['RunOut']++;
+                        }
+                    } else {
+                        if ($player['player_id'] == $fielder1) {
+                            $player['fielder']['assitedRunOut']++;
+                        }
+
+                        if ($player['player_id'] == $fielder2) {
+                            $player['fielder']['RunOut']++;
+                        }
+                    }
                 }
             }
 
             foreach ($find_match['teamBPlayers']['players'] as $key => $player) {
-                if ($player['player_id'] == $bowlerId) {
+                if ($player['player_id'] == $batsmanId) {
+                    if ($out_style == "Retired") {
+                        $player['batting']['outStyle'] = $out_style;
+                        $batsman = $player;
+                    } else {
+                        $player['batting']['batStatus'] = "out";
+                        $player['batting']['outStyle'] = $out_style;
+                        $batsman = $player;
+                    }
+                }elseif ($player['player_id'] == $bowlerId) {
                     if ($out_style != "Run Out" || $out_style != "Retired") {
                         $player['bowling']['wicket']++;
                     }
@@ -156,8 +221,8 @@ if (!isset($_SESSION['userId'])) {
 
                 $balls = [
                     'ballNo' => $over,
-                    'striker' => $ball_obj['striker'],
-                    'nonStriker' => $ball_obj['nonStriker'],
+                    'striker' => $currentStriker,
+                    'nonStriker' => $currentStriker,
                     'outBatsman' => $batsmanId,
                     'out_style' => $out_style,
                     'runs' => "W",
